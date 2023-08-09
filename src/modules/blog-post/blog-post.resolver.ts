@@ -9,7 +9,9 @@ export class BlogPostResolver {
   constructor(private readonly blogPostService: BlogPostService) {}
 
   @Mutation(() => BlogPost)
-  createBlogPost(@Args('createBlogPostInput') createBlogPostInput: CreateBlogPostInput) {
+  createBlogPost(
+    @Args('createBlogPostInput') createBlogPostInput: CreateBlogPostInput,
+  ) {
     return this.blogPostService.create(createBlogPostInput as any);
   }
 
@@ -20,16 +22,18 @@ export class BlogPostResolver {
 
   @Query(() => BlogPost, { name: 'blogPost' })
   findOne(@Args('id', { type: () => String }) id: string) {
-    return this.blogPostService.findOne({where: {id}});
+    return this.blogPostService.findOne({ where: { id } });
   }
 
   @Mutation(() => BlogPost)
-  updateBlogPost(@Args('updateBlogPostInput') updateBlogPostInput: UpdateBlogPostInput) {
+  updateBlogPost(
+    @Args('updateBlogPostInput') updateBlogPostInput: UpdateBlogPostInput,
+  ) {
     return this.blogPostService.update(updateBlogPostInput as any);
   }
 
   @Mutation(() => BlogPost)
   removeBlogPost(@Args('id', { type: () => String }) id: string) {
-    return this.blogPostService.delete({id});
+    return this.blogPostService.delete({ id });
   }
 }

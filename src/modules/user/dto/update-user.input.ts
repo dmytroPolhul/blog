@@ -1,6 +1,6 @@
 import { CreateUserInput } from './create-user.input';
 import { InputType, Field, PartialType } from '@nestjs/graphql';
-import {IsBoolean, IsEmail, IsString, IsUUID} from "class-validator";
+import { IsBoolean, IsEmail, IsString, IsUUID } from 'class-validator';
 
 @InputType()
 export class UpdateUserInput extends PartialType(CreateUserInput) {
@@ -12,11 +12,11 @@ export class UpdateUserInput extends PartialType(CreateUserInput) {
   @IsBoolean()
   status?: boolean;
 
-  @Field(() => String, {nullable: true})
+  @Field(() => String, { nullable: true })
   @IsString()
   newPassword?: string;
 
-  @Field(() => String, {nullable: true})
+  @Field(() => String, { nullable: true })
   @IsEmail()
   newEmail?: string;
 }

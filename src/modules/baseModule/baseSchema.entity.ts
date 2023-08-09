@@ -5,24 +5,24 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import {Field, ObjectType} from "@nestjs/graphql";
+import { Field, ObjectType } from '@nestjs/graphql';
 
 @ObjectType()
 @Entity()
 export abstract class BaseSchema {
   @PrimaryGeneratedColumn('uuid')
-  @Field(type => String)
+  @Field((type) => String)
   id: string;
 
   @CreateDateColumn()
-  @Field(type => Date)
+  @Field((type) => Date)
   createdAt: Date;
 
   @UpdateDateColumn()
-  @Field(type => Date)
+  @Field((type) => Date)
   updatedAt: Date;
 
   @DeleteDateColumn()
-  @Field(type => Date)
+  @Field((type) => Date)
   deletedAt: Date;
 }

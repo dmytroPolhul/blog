@@ -1,37 +1,34 @@
-import {BadRequestException, Injectable} from "@nestjs/common";
-import {BaseService} from "../baseModule/base.service";
-import {User} from "./entities/user.entity";
-import {UserRepository} from "./repositories/user.repository";
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { BaseService } from '../baseModule/base.service';
+import { User } from './entities/user.entity';
+import { UserRepository } from './repositories/user.repository';
 import * as bcrypt from 'bcrypt';
-import {CreateUserInput} from "./dto/create-user.input";
-import {UpdateUserInput} from "./dto/update-user.input";
-
+import { CreateUserInput } from './dto/create-user.input';
+import { UpdateUserInput } from './dto/update-user.input';
 
 @Injectable()
 export class UserService extends BaseService<User> {
-  constructor(
-      private userRepository: UserRepository,
-  ) {
+  constructor(private userRepository: UserRepository) {
     super(userRepository);
   }
 
   async createUser(request: CreateUserInput): Promise<User> {
     const hashedPassword = await bcrypt.hash(request.password, 10);
-    return this.userRepository.create({...request, password: hashedPassword})
+    return this.userRepository.create({ ...request, password: hashedPassword });
   }
 
   async updateUser(request: UpdateUserInput): Promise<User> {
     const user = await this.userRepository.findOneOrFail({
       select: ['password'],
       where: {
-        id: request.id
-      }
+        id: request.id,
+      },
     });
 
     if (request.password && request.newPassword) {
       const passwordValid = await bcrypt.compare(
-          request.password,
-          user.password,
+        request.password,
+        user.password,
       );
       if (passwordValid) {
         request.password = await bcrypt.hash(request.newPassword, 10);
@@ -55,15 +52,15 @@ export class UserService extends BaseService<User> {
       }
     }
 
-    return this.userRepository.update({...user, ...request})
+    return this.userRepository.update({ ...user, ...request });
   }
 
-  async deleteUser(id: string):Promise<User> {
-    return this.userRepository.delete({id});
+  async deleteUser(id: string): Promise<User> {
+    return this.userRepository.delete({ id });
   }
 
   async getOneUser(id: string): Promise<User> {
-    return this.userRepository.findOneOrFail({where: {id}});
+    return this.userRepository.findOneOrFail({ where: { id } });
   }
 
   async getUsers(): Promise<User[]> {

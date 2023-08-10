@@ -1,8 +1,12 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import {Resolver, Query, Mutation, Args, Int, ResolveField, Parent} from '@nestjs/graphql';
 import { BlogPostService } from './blog-post.service';
 import { BlogPost } from './entities/blog-post.entity';
 import { CreateBlogPostInput } from './dto/create-blog-post.input';
 import { UpdateBlogPostInput } from './dto/update-blog-post.input';
+import {Blog} from "../blog/entities/blog.entity";
+import {BlogPostsResponse} from "./dto/responses/blogPost.response";
+import {FilteringPaginationSorting} from "../blog/types/filteringPaginationSorting.input";
+import {BlogPostFilteringPaginationSorting} from "./types/filteringPaginationSorting.input";
 
 @Resolver(() => BlogPost)
 export class BlogPostResolver {
@@ -12,28 +16,33 @@ export class BlogPostResolver {
   createBlogPost(
     @Args('createBlogPostInput') createBlogPostInput: CreateBlogPostInput,
   ) {
-    return this.blogPostService.create(createBlogPostInput as any);
-  }
-
-  @Query(() => [BlogPost], { name: 'blogPost' })
-  findAll() {
-    return this.blogPostService.find(undefined);
-  }
-
-  @Query(() => BlogPost, { name: 'blogPost' })
-  findOne(@Args('id', { type: () => String }) id: string) {
-    return this.blogPostService.findOne({ where: { id } });
+    return this.blogPostService.createPost(createBlogPostInput);
   }
 
   @Mutation(() => BlogPost)
   updateBlogPost(
-    @Args('updateBlogPostInput') updateBlogPostInput: UpdateBlogPostInput,
+      @Args('updateBlogPostInput') updateBlogPostInput: UpdateBlogPostInput,
   ) {
-    return this.blogPostService.update(updateBlogPostInput as any);
+    return this.blogPostService.updatePost(updateBlogPostInput);
   }
 
   @Mutation(() => BlogPost)
   removeBlogPost(@Args('id', { type: () => String }) id: string) {
-    return this.blogPostService.delete({ id });
+    return this.blogPostService.deletePost(id);
+  }
+
+  @Query(() => BlogPostsResponse, { name: 'blogPosts' })
+  blogPosts(@Args('filter', { nullable: true }) filter?: BlogPostFilteringPaginationSorting): Promise<BlogPostsResponse> {
+    return this.blogPostService.getPosts(filter);
+  }
+
+  @Query(() => BlogPost, { name: 'blogPost' })
+  findOne(@Args('id', { type: () => String }) id: string) {
+    return this.blogPostService.getPost(id);
+  }
+
+  @ResolveField(returns => Blog)
+  blog(@Parent() blogPost: BlogPost): Promise<Blog> {
+    return this.blogPostService.getMainBlog(blogPost.blog.id);
   }
 }

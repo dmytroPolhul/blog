@@ -16,7 +16,7 @@ export class User extends BaseSchema {
   @Field((type) => String)
   lastName: string;
 
-  @Column({ type: 'varchar', nullable: false })
+  @Column({ type: 'varchar', nullable: false, unique: true })
   @Field((type) => String)
   email: string;
 

@@ -1,8 +1,10 @@
 import { CreateBlogPostInput } from './create-blog-post.input';
 import { InputType, Field, Int, PartialType } from '@nestjs/graphql';
+import {IsUUID} from "class-validator";
 
 @InputType()
 export class UpdateBlogPostInput extends PartialType(CreateBlogPostInput) {
-  @Field(() => Int)
-  id: number;
+  @Field(() => String)
+  @IsUUID('4')
+  id: string;
 }

@@ -1,26 +1,50 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import {Args, Mutation, Parent, Query, ResolveField, Resolver} from '@nestjs/graphql';
 import { BlogService } from './blog.service';
 import { Blog } from './entities/blog.entity';
-import { BlogRequest } from './dto/requests/blog.request';
+import { CreateBlogInput } from './dto/requests/create-blog.input';
+import {UpdateBlogInput} from "./dto/requests/update-blog.input";
+import {User} from "../user/entities/user.entity";
+import {BlogsResponse} from "./dto/responses/blog.response";
+import {FilteringPaginationSorting} from "./types/filteringPaginationSorting.input";
 
 @Resolver((of) => Blog)
 export class BlogResolver {
   constructor(private blogService: BlogService) {}
 
-  @Query((returns) => [Blog])
-  blog(): Promise<Blog[]> {
-    return this.blogService.find(undefined);
+  @Mutation((returns) => Blog)
+  createBlog(@Args('createBlogInput') request: CreateBlogInput): Promise<Blog> {
+    return this.blogService.createBlog(request);
   }
 
   @Mutation((returns) => Blog)
-  createBlog(@Args('createBlogInput') request: BlogRequest): Promise<Blog> {
-    return this.blogService.create(request);
+  updateBlog(@Args('updateBlogInput') request: UpdateBlogInput): Promise<Blog> {
+    return this.blogService.updateBlog(request);
+  }
+
+  @Mutation((returns) => Blog)
+  deleteBlog(@Args('blogId') blogId: string): Promise<boolean> {
+    return this.blogService.deleteBlog(blogId);
   }
 
   @Query((returns) => Blog)
   getBlogById(
     @Args('blogId', { type: () => String }) blogId: string,
   ): Promise<Blog> {
-    return this.blogService.findOneOrFail({ where: { id: blogId } });
+    return this.blogService.getBlog(blogId);
+  }
+
+  @Query((returns) => BlogsResponse)
+  blogs(@Args('filter', { nullable: true }) filter?: FilteringPaginationSorting): Promise<BlogsResponse> {
+    return this.blogService.getBlogs(filter);
+  }
+
+  @Query((returns) => [Blog])
+  async getBlogPosts(@Args('blogId', {type: () => String}) blogId: string): Promise<Blog[]> {
+    return this.blogService.findRelatedPosts(blogId);
+  }
+
+  @ResolveField(returns => User)
+  author(@Parent() blog: Blog): Promise<User> {
+    return this.blogService.getAuthor(blog.author.id);
   }
 }

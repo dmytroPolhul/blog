@@ -4,9 +4,10 @@ import { BlogPostResolver } from './blog-post.resolver';
 import { BlogPostRepository } from './repositories/blogPost.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BlogPost } from './entities/blog-post.entity';
+import {BlogModule} from "../blog/blog.module";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([BlogPost])],
+  imports: [TypeOrmModule.forFeature([BlogPost]), BlogModule],
   providers: [BlogPostRepository, BlogPostResolver, BlogPostService],
 })
 export class BlogPostModule {}

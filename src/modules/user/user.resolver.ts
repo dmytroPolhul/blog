@@ -29,7 +29,7 @@ export class UserResolver {
 
   @Query(() => User, { name: 'userById' })
   findOneUser(@Args('id', { type: () => String }) id: string): Promise<User> {
-    return this.userService.getOneUser(id);
+    return this.userService.getUser(id);
   }
 
   @Query(() => [User], { name: 'users' })

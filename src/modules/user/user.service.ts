@@ -14,6 +14,10 @@ export class UserService extends BaseService<User> {
 
   async createUser(request: CreateUserInput): Promise<User> {
     const hashedPassword = await bcrypt.hash(request.password, 10);
+    const existingUser = await this.userRepository.findOne({where: {email: request.email}});
+    if (existingUser) {
+      throw new BadRequestException('User already registered');
+    }
     return this.userRepository.create({ ...request, password: hashedPassword });
   }
 
@@ -59,7 +63,7 @@ export class UserService extends BaseService<User> {
     return this.userRepository.delete({ id });
   }
 
-  async getOneUser(id: string): Promise<User> {
+  async getUser(id: string): Promise<User> {
     return this.userRepository.findOneOrFail({ where: { id } });
   }
 

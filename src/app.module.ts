@@ -6,6 +6,7 @@ import { DatabaseModule } from './database/database.module';
 import { BlogModule } from './modules/blog/blog.module';
 import { UserModule } from './modules/user/user.module';
 import { BlogPostModule } from './modules/blog-post/blog-post.module';
+import {AuthModule} from "./modules/auth/auth.module";
 
 @Module({
   imports: [
@@ -13,7 +14,9 @@ import { BlogPostModule } from './modules/blog-post/blog-post.module';
       driver: ApolloDriver,
       playground: true,
       autoSchemaFile: true,
+      context: ({ req, res }) => ({ req, res }),
     }),
+    AuthModule,
     AppConfigModule,
     DatabaseModule,
     BlogModule,

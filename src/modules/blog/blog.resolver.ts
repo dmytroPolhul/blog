@@ -13,12 +13,15 @@ import { UpdateBlogInput } from './dto/requests/update-blog.input';
 import { User } from '../user/entities/user.entity';
 import { BlogsResponse } from './dto/responses/blog.response';
 import { FilteringPaginationSorting } from './types/filteringPaginationSorting.input';
+import {AuthPermission} from "../../common/decorators/auth.decorator";
+import {Role} from "../../common/enums/userRole.enum";
 
 @Resolver((of) => Blog)
 export class BlogResolver {
   constructor(private blogService: BlogService) {}
 
   @Mutation((returns) => Blog)
+  @AuthPermission(Role.WRITER)
   createBlog(@Args('createBlogInput') request: CreateBlogInput): Promise<Blog> {
     return this.blogService.createBlog(request);
   }

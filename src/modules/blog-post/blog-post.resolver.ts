@@ -1,12 +1,20 @@
-import {Resolver, Query, Mutation, Args, Int, ResolveField, Parent} from '@nestjs/graphql';
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Args,
+  Int,
+  ResolveField,
+  Parent,
+} from '@nestjs/graphql';
 import { BlogPostService } from './blog-post.service';
 import { BlogPost } from './entities/blog-post.entity';
 import { CreateBlogPostInput } from './dto/create-blog-post.input';
 import { UpdateBlogPostInput } from './dto/update-blog-post.input';
-import {Blog} from "../blog/entities/blog.entity";
-import {BlogPostsResponse} from "./dto/responses/blogPost.response";
-import {FilteringPaginationSorting} from "../blog/types/filteringPaginationSorting.input";
-import {BlogPostFilteringPaginationSorting} from "./types/filteringPaginationSorting.input";
+import { Blog } from '../blog/entities/blog.entity';
+import { BlogPostsResponse } from './dto/responses/blogPost.response';
+import { FilteringPaginationSorting } from '../blog/types/filteringPaginationSorting.input';
+import { BlogPostFilteringPaginationSorting } from './types/filteringPaginationSorting.input';
 
 @Resolver(() => BlogPost)
 export class BlogPostResolver {
@@ -21,7 +29,7 @@ export class BlogPostResolver {
 
   @Mutation(() => BlogPost)
   updateBlogPost(
-      @Args('updateBlogPostInput') updateBlogPostInput: UpdateBlogPostInput,
+    @Args('updateBlogPostInput') updateBlogPostInput: UpdateBlogPostInput,
   ) {
     return this.blogPostService.updatePost(updateBlogPostInput);
   }
@@ -32,7 +40,10 @@ export class BlogPostResolver {
   }
 
   @Query(() => BlogPostsResponse, { name: 'blogPosts' })
-  blogPosts(@Args('filter', { nullable: true }) filter?: BlogPostFilteringPaginationSorting): Promise<BlogPostsResponse> {
+  blogPosts(
+    @Args('filter', { nullable: true })
+    filter?: BlogPostFilteringPaginationSorting,
+  ): Promise<BlogPostsResponse> {
     return this.blogPostService.getPosts(filter);
   }
 
@@ -41,7 +52,7 @@ export class BlogPostResolver {
     return this.blogPostService.getPost(id);
   }
 
-  @ResolveField(returns => Blog)
+  @ResolveField((returns) => Blog)
   blog(@Parent() blogPost: BlogPost): Promise<Blog> {
     return this.blogPostService.getMainBlog(blogPost.blog.id);
   }

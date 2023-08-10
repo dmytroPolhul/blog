@@ -14,7 +14,9 @@ export class UserService extends BaseService<User> {
 
   async createUser(request: CreateUserInput): Promise<User> {
     const hashedPassword = await bcrypt.hash(request.password, 10);
-    const existingUser = await this.userRepository.findOne({where: {email: request.email}});
+    const existingUser = await this.userRepository.findOne({
+      where: { email: request.email },
+    });
     if (existingUser) {
       throw new BadRequestException('User already registered');
     }

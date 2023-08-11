@@ -1,0 +1,47 @@
+version: "1.0"
+services:
+  water-database:
+    image: postgres:12
+    restart: always
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=postgres
+    networks:
+      - water-network
+    container_name: water-database
+    volumes:
+      - nps_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 30s
+      retries: 5
+
+  blog:
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    container_name: blog
+    env_file:
+      - ./.env
+    ports:
+      - '8000:8000'
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=postgres
+      - DB_HOST=water-database
+      - POSTGRES_PORT=5432
+    networks:
+      - water-network
+    depends_on:
+      water-database:
+        condition: service_healthy
+    restart: unless-stopped
+volumes:
+  nps_data: { }
+networks:
+  water-network:

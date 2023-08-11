@@ -1,13 +1,14 @@
-import { Injectable } from '@nestjs/common';
-import { BaseService } from '../baseModule/base.service';
-import { Blog } from './entities/blog.entity';
-import { BlogRepository } from './repositories/blog.repository';
-import { UpdateBlogInput } from './dto/requests/update-blog.input';
-import { CreateBlogInput } from './dto/requests/create-blog.input';
-import { UserService } from '../user/user.service';
-import { User } from '../user/entities/user.entity';
-import { BlogsResponse } from './dto/responses/blog.response';
-import { FilteringPaginationSorting } from './types/filteringPaginationSorting.input';
+import {Injectable, NotFoundException, UnauthorizedException} from '@nestjs/common';
+import {BaseService} from '../baseModule/base.service';
+import {Blog} from './entities/blog.entity';
+import {BlogRepository} from './repositories/blog.repository';
+import {UpdateBlogInput} from './dto/requests/update-blog.input';
+import {CreateBlogInput} from './dto/requests/create-blog.input';
+import {UserService} from '../user/user.service';
+import {User} from '../user/entities/user.entity';
+import {BlogsResponse} from './dto/responses/blog.response';
+import {FilteringPaginationSorting} from './types/filteringPaginationSorting.input';
+import {Role} from "../../common/enums/userRole.enum";
 
 @Injectable()
 export class BlogService extends BaseService<Blog> {
@@ -23,20 +24,33 @@ export class BlogService extends BaseService<Blog> {
     return this.blogRepository.create({ ...request, author });
   }
 
-  async updateBlog(request: UpdateBlogInput): Promise<Blog> {
+  async updateBlog(user: User, request: UpdateBlogInput): Promise<Blog> {
     const blog = await this.blogRepository.findOne({
       where: { id: request.id },
+      relations: ['author'],
     });
-    let author = blog.author;
-    if (request.authorId) {
-      author = await this.userService.getUser(request.authorId);
+
+    if (user.role !== Role.MODERATOR && blog.author.id !== user.id) {
+      throw new UnauthorizedException('You can only update your own blogs.');
     }
-    return this.blogRepository.update({ ...blog, ...request, author });
+
+    delete request.id;
+    const updatedBlog = await this.blogRepository.update({ ...blog, ...request });
+    return this.getBlog(blog.id);
   }
 
-  async deleteBlog(id: string): Promise<boolean> {
-    const blog = await this.blogRepository.hardDelete({ id });
-    return !!blog;
+  async deleteBlog(user: User, id: string): Promise<boolean> {
+    const blog = await this.blogRepository.findOne({
+      where: { id },
+      relations: ['author'],
+    });
+
+    if (user.role !== Role.MODERATOR && blog.author.id !== user.id) {
+      throw new UnauthorizedException('You can only delete your own blogs.');
+    }
+
+    const affectedBlog = await this.blogRepository.hardDelete({ id });
+    return !!affectedBlog;
   }
 
   async getBlog(id: string): Promise<Blog> {
@@ -88,5 +102,15 @@ export class BlogService extends BaseService<Blog> {
 
   async findRelatedPosts(id: string): Promise<Blog[]> {
     return this.blogRepository.find({ where: { id }, relations: ['posts'] });
+  }
+
+  async checkOwnership(blogId: string, userId: string): Promise<boolean> {
+    const blog = await this.getBlog(blogId);
+
+    if (!blog) {
+      throw new NotFoundException('Blog not found');
+    }
+
+    return blog.author.id === userId;
   }
 }

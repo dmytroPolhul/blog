@@ -1,5 +1,5 @@
 import {
-  Args,
+  Args, Context,
   Mutation,
   Parent,
   Query,
@@ -27,20 +27,30 @@ export class BlogResolver {
   }
 
   @Mutation((returns) => Blog)
-  updateBlog(@Args('updateBlogInput') request: UpdateBlogInput): Promise<Blog> {
-    return this.blogService.updateBlog(request);
+  @AuthPermission()
+  updateBlog(
+      @Args('updateBlogInput') request: UpdateBlogInput,
+      @Context() context,
+  ): Promise<Blog> {
+    const user = context.req.user;
+    return this.blogService.updateBlog(user,request);
   }
 
   @Mutation((returns) => Blog)
-  deleteBlog(@Args('blogId') blogId: string): Promise<boolean> {
-    return this.blogService.deleteBlog(blogId);
+  @AuthPermission()
+  deleteBlog(
+      @Args('id') id: string,
+      @Context() context
+  ): Promise<boolean> {
+    const user = context.req.user;
+    return this.blogService.deleteBlog(user, id);
   }
 
   @Query((returns) => Blog)
   getBlogById(
-    @Args('blogId', { type: () => String }) blogId: string,
+    @Args('id', { type: () => String }) id: string,
   ): Promise<Blog> {
-    return this.blogService.getBlog(blogId);
+    return this.blogService.getBlog(id);
   }
 
   @Query((returns) => BlogsResponse)
@@ -52,9 +62,9 @@ export class BlogResolver {
 
   @Query((returns) => [Blog])
   async getBlogPosts(
-    @Args('blogId', { type: () => String }) blogId: string,
+    @Args('id', { type: () => String }) id: string,
   ): Promise<Blog[]> {
-    return this.blogService.findRelatedPosts(blogId);
+    return this.blogService.findRelatedPosts(id);
   }
 
   @ResolveField((returns) => User)

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import {Injectable, UnauthorizedException} from '@nestjs/common';
 import { BaseService } from '../baseModule/base.service';
 import { BlogPost } from './entities/blog-post.entity';
 import { BlogPostRepository } from './repositories/blogPost.repository';
@@ -9,6 +9,8 @@ import { Blog } from '../blog/entities/blog.entity';
 import { BlogPostFilteringPaginationSorting } from './types/filteringPaginationSorting.input';
 import { BlogPostsResponse } from './dto/responses/blogPost.response';
 import { ILike } from 'typeorm';
+import {User} from "../user/entities/user.entity";
+import {Role} from "../../common/enums/userRole.enum";
 
 @Injectable()
 export class BlogPostService extends BaseService<BlogPost> {
@@ -24,20 +26,25 @@ export class BlogPostService extends BaseService<BlogPost> {
     return this.blogPostRepository.create({ ...request, blog });
   }
 
-  async updatePost(request: UpdateBlogPostInput): Promise<BlogPost> {
+  async updatePost(user: User, request: UpdateBlogPostInput): Promise<BlogPost> {
     const post = await this.blogPostRepository.findOne({
       where: { id: request.id },
     });
+
+    if (user.role !== Role.MODERATOR && post.blog.author.id !== user.id) {
+      throw new UnauthorizedException('You can only update your own blog posts.');
+    }
 
     let blog = post.blog;
     if (request.blogId) {
       blog = await this.blogService.getBlog(request.blogId);
     }
-    return this.blogPostRepository.update({ ...post, blog });
+    const updatedPost = await this.blogPostRepository.update({ ...post, blog });
+    return this.getPost(post.id);
   }
 
   async getPost(id: string): Promise<BlogPost> {
-    return this.blogPostRepository.findOneOrFail({ where: { id } });
+    return this.blogPostRepository.findOneOrFail({ where: { id }, relations: ['blog'] });
   }
 
   async getPosts(
@@ -71,9 +78,13 @@ export class BlogPostService extends BaseService<BlogPost> {
     };
   }
 
-  async deletePost(id: string): Promise<boolean> {
-    const post = await this.blogPostRepository.hardDelete({ id });
-    return !!post;
+  async deletePost(user:User, id: string): Promise<boolean> {
+    const post = await this.getPost(id);
+    if (user.role !== Role.MODERATOR && post.blog.author.id !== user.id) {
+      throw new UnauthorizedException('You can only update your own blog posts.');
+    }
+    const affectedPost = await this.blogPostRepository.hardDelete({ id });
+    return !!affectedPost;
   }
 
   async getMainBlog(id: string): Promise<Blog> {

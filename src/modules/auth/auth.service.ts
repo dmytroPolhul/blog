@@ -7,6 +7,7 @@ import {
 import { UserService } from '../user/user.service';
 import * as bcrypt from 'bcrypt';
 import * as uuid from 'uuid';
+import * as process from "process";
 
 @Injectable()
 export class AuthService {
@@ -39,6 +40,7 @@ export class AuthService {
       role: user.role,
       sub: user.email,
       iat: Math.floor(Date.now() / 1000),
+      exp: Math.floor(Date.now() / 1000) + Number(process.env.JWT_EXPIRE_IN),
       jti: uuid.v4(),
     };
     return this.jwtService.sign(payload);

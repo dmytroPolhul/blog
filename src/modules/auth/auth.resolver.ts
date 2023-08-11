@@ -13,14 +13,14 @@ export class AuthResolver {
   ): Promise<string> {
     const token = await this.authService.login(username, password);
     const res = context.res;
-    res.cookie('token', token, { httpOnly: true });
+    res.cookie('session', token, { httpOnly: true });
     return token;
   }
 
   @Mutation(() => Boolean)
   logout(@Context() context: any): boolean {
     const res = context.res;
-    res.clearCookie('token');
+    res.clearCookie('session');
     return true;
   }
 }

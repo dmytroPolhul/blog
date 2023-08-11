@@ -17,11 +17,11 @@ export const getTypeORMConfig = (): DataSourceOptions => {
 
   return {
     type: 'postgres',
-    port: get('DB_PORT').required().asPortNumber() || 5433,
+    port: get('POSTGRES_PORT').required().asPortNumber() || 5433,
     host: get('DB_HOST').required().asString(),
-    username: get('DB_USERNAME').required().asString(),
-    password: get('DB_PASSWORD').required().asString(),
-    database: get('DB_DATABASE').required().asString(),
+    username: get('POSTGRES_USER').required().asString(),
+    password: get('POSTGRES_PASSWORD').required().asString(),
+    database: get('POSTGRES_DB').required().asString(),
     synchronize: false,
     logger: new DatabaseLogger(),
     entities: [__dirname + '/../**/*.entity{.ts,.js}'],

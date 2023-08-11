@@ -1,14 +1,18 @@
-import {Injectable, NotFoundException, UnauthorizedException} from '@nestjs/common';
-import {BaseService} from '../baseModule/base.service';
-import {Blog} from './entities/blog.entity';
-import {BlogRepository} from './repositories/blog.repository';
-import {UpdateBlogInput} from './dto/requests/update-blog.input';
-import {CreateBlogInput} from './dto/requests/create-blog.input';
-import {UserService} from '../user/user.service';
-import {User} from '../user/entities/user.entity';
-import {BlogsResponse} from './dto/responses/blog.response';
-import {FilteringPaginationSorting} from './types/filteringPaginationSorting.input';
-import {Role} from "../../common/enums/userRole.enum";
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { BaseService } from '../baseModule/base.service';
+import { Blog } from './entities/blog.entity';
+import { BlogRepository } from './repositories/blog.repository';
+import { UpdateBlogInput } from './dto/requests/update-blog.input';
+import { CreateBlogInput } from './dto/requests/create-blog.input';
+import { UserService } from '../user/user.service';
+import { User } from '../user/entities/user.entity';
+import { BlogsResponse } from './dto/responses/blog.response';
+import { FilteringPaginationSorting } from './types/filteringPaginationSorting.input';
+import { Role } from '../../common/enums/userRole.enum';
 
 @Injectable()
 export class BlogService extends BaseService<Blog> {
@@ -35,7 +39,10 @@ export class BlogService extends BaseService<Blog> {
     }
 
     delete request.id;
-    const updatedBlog = await this.blogRepository.update({ ...blog, ...request });
+    const updatedBlog = await this.blogRepository.update({
+      ...blog,
+      ...request,
+    });
     return this.getBlog(blog.id);
   }
 

@@ -1,5 +1,6 @@
 import {
-  Args, Context,
+  Args,
+  Context,
   Mutation,
   Parent,
   Query,
@@ -29,27 +30,22 @@ export class BlogResolver {
   @Mutation((returns) => Blog)
   @AuthPermission()
   updateBlog(
-      @Args('updateBlogInput') request: UpdateBlogInput,
-      @Context() context,
+    @Args('updateBlogInput') request: UpdateBlogInput,
+    @Context() context,
   ): Promise<Blog> {
     const user = context.req.user;
-    return this.blogService.updateBlog(user,request);
+    return this.blogService.updateBlog(user, request);
   }
 
   @Mutation((returns) => Blog)
   @AuthPermission()
-  deleteBlog(
-      @Args('id') id: string,
-      @Context() context
-  ): Promise<boolean> {
+  deleteBlog(@Args('id') id: string, @Context() context): Promise<boolean> {
     const user = context.req.user;
     return this.blogService.deleteBlog(user, id);
   }
 
   @Query((returns) => Blog)
-  getBlogById(
-    @Args('id', { type: () => String }) id: string,
-  ): Promise<Blog> {
+  getBlogById(@Args('id', { type: () => String }) id: string): Promise<Blog> {
     return this.blogService.getBlog(id);
   }
 

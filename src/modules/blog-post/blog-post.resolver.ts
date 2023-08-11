@@ -5,7 +5,8 @@ import {
   Args,
   Int,
   ResolveField,
-  Parent, Context,
+  Parent,
+  Context,
 } from '@nestjs/graphql';
 import { BlogPostService } from './blog-post.service';
 import { BlogPost } from './entities/blog-post.entity';
@@ -14,8 +15,8 @@ import { UpdateBlogPostInput } from './dto/update-blog-post.input';
 import { Blog } from '../blog/entities/blog.entity';
 import { BlogPostsResponse } from './dto/responses/blogPost.response';
 import { BlogPostFilteringPaginationSorting } from './types/filteringPaginationSorting.input';
-import {AuthPermission} from "../../common/decorators/auth.decorator";
-import {Role} from "../../common/enums/userRole.enum";
+import { AuthPermission } from '../../common/decorators/auth.decorator';
+import { Role } from '../../common/enums/userRole.enum';
 
 @Resolver(() => BlogPost)
 export class BlogPostResolver {
@@ -42,8 +43,8 @@ export class BlogPostResolver {
   @Mutation(() => BlogPost)
   @AuthPermission()
   removeBlogPost(
-      @Args('id', { type: () => String }) id: string,
-      @Context() context,
+    @Args('id', { type: () => String }) id: string,
+    @Context() context,
   ) {
     const user = context.req.user;
     return this.blogPostService.deletePost(user, id);

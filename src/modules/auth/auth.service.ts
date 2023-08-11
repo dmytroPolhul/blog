@@ -7,7 +7,7 @@ import {
 import { UserService } from '../user/user.service';
 import * as bcrypt from 'bcrypt';
 import * as uuid from 'uuid';
-import * as process from "process";
+import * as process from 'process';
 
 @Injectable()
 export class AuthService {

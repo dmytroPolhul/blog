@@ -12,6 +12,9 @@ jobs:
       - name: Github checkout
         uses: actions/checkout@v3
 
+      - name: Install dependencies for actions
+        run: npm install
+
       - name: Testing
         run: npm run test
 
@@ -22,8 +25,7 @@ jobs:
         run: flyctl deploy --remote-only
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
-      - name: Install dependencies for migration
-        run: npm install
+
       - name: Run TypeORM migrations
         run: |
           flyctl proxy 5432:5432 -a hw-db &

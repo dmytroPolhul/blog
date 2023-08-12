@@ -15,6 +15,7 @@ async function bootstrap() {
     credentials: true,
   });
 
-  await app.listen(process.env.PORT, '0.0.0.0');
+  await app.listen(process.env.PORT, process.env.BASE_HOST);
+  console.log('Server listen on:', process.env.BASE_HOST, process.env.PORT)
 }
 bootstrap();

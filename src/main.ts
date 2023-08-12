@@ -16,6 +16,6 @@ async function bootstrap() {
   });
 
   await app.listen(process.env.PORT, process.env.BASE_HOST);
-  console.log('Server listen on:', process.env.BASE_HOST, process.env.PORT)
+  console.log('Server listen on:', process.env.BASE_HOST, process.env.PORT);
 }
 bootstrap();

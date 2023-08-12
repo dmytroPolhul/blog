@@ -5,7 +5,7 @@ on:
       - main
 jobs:
   build-and-deploy:
-    name: Deploy app
+    name: Build and deploy
     runs-on: ubuntu-latest
     environment: production
     steps:

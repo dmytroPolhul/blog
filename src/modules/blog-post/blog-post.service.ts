@@ -44,7 +44,7 @@ export class BlogPostService extends BaseService<BlogPost> {
     if (request.blogId) {
       blog = await this.blogService.getBlog(request.blogId);
     }
-    const updatedPost = await this.blogPostRepository.update({ ...post, blog });
+    await this.blogPostRepository.update({ ...post, blog });
     return this.getPost(post.id);
   }
 

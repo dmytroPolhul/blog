@@ -3,15 +3,15 @@ import { IsString } from 'class-validator';
 
 @InputType()
 export class CreateBlogInput {
-  @Field((type) => String)
+  @Field(() => String)
   @IsString()
   title!: string;
 
-  @Field((type) => String)
+  @Field(() => String)
   @IsString()
   description!: string;
 
-  @Field((type) => String)
+  @Field(() => String)
   @IsString()
   authorId!: string;
 }

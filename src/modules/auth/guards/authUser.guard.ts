@@ -5,9 +5,8 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
-import { Buffer } from 'buffer';
 import { UserService } from '../../user/user.service';
-import { GqlContextType, GqlExecutionContext } from '@nestjs/graphql';
+import { GqlExecutionContext } from '@nestjs/graphql';
 
 @Injectable()
 export class AuthUserGuard implements CanActivate {

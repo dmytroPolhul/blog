@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, OneToMany, OneToOne } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 import { BaseSchema } from '../../baseModule/baseSchema.entity';
 import { Field, ObjectType } from '@nestjs/graphql';
 import { BlogPost } from '../../blog-post/entities/blog-post.entity';
@@ -8,18 +8,18 @@ import { User } from '../../user/entities/user.entity';
 @Entity('blog')
 export class Blog extends BaseSchema {
   @Column({ type: 'varchar', nullable: false })
-  @Field((type) => String)
+  @Field(() => String)
   title: string;
 
   @Column({ type: 'varchar', nullable: false })
-  @Field((type) => String)
+  @Field(() => String)
   description: string;
 
   @OneToMany(() => BlogPost, (blogPost) => blogPost.blog)
-  @Field((type) => [BlogPost], { nullable: true })
+  @Field(() => [BlogPost], { nullable: true })
   posts?: BlogPost[];
 
   @ManyToOne(() => User, (user) => user.blogs)
-  @Field((type) => User, { nullable: false })
+  @Field(() => User, { nullable: false })
   author?: User;
 }

@@ -3,7 +3,6 @@ import {
   Query,
   Mutation,
   Args,
-  Int,
   ResolveField,
   Parent,
   Context,
@@ -63,7 +62,7 @@ export class BlogPostResolver {
     return this.blogPostService.getPost(id);
   }
 
-  @ResolveField((returns) => Blog)
+  @ResolveField(() => Blog)
   blog(@Parent() blogPost: BlogPost): Promise<Blog> {
     return this.blogPostService.getMainBlog(blogPost.blog.id);
   }

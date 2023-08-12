@@ -11,18 +11,18 @@ import { Field, ObjectType } from '@nestjs/graphql';
 @Entity()
 export abstract class BaseSchema {
   @PrimaryGeneratedColumn('uuid')
-  @Field((type) => String)
+  @Field(() => String)
   id: string;
 
   @CreateDateColumn()
-  @Field((type) => Date)
+  @Field(() => Date)
   createdAt: Date;
 
   @UpdateDateColumn()
-  @Field((type) => Date)
+  @Field(() => Date)
   updatedAt: Date;
 
   @DeleteDateColumn()
-  @Field((type) => Date)
+  @Field(() => Date)
   deletedAt: Date;
 }

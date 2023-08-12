@@ -1,4 +1,4 @@
-import { Field, InputType, ObjectType } from '@nestjs/graphql';
+import { Field, InputType } from '@nestjs/graphql';
 import { Ordering } from '../enums/ordering.enum';
 import { IsOptional } from 'class-validator';
 

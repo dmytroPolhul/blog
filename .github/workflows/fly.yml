@@ -15,8 +15,8 @@ jobs:
       - name: Install dependencies for actions
         run: npm install
 
-#      - name: Testing
-#        run: npm run test
+      - name: Testing
+        run: npm run test
 
       - name: Setup Fly.io config
         uses: superfly/flyctl-actions/setup-flyctl@master

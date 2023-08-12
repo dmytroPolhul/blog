@@ -39,7 +39,7 @@ export class BlogService extends BaseService<Blog> {
     }
 
     delete request.id;
-    const updatedBlog = await this.blogRepository.update({
+    await this.blogRepository.update({
       ...blog,
       ...request,
     });

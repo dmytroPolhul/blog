@@ -1,4 +1,4 @@
-import { Field, InputType, ObjectType } from '@nestjs/graphql';
+import { Field, InputType } from '@nestjs/graphql';
 import { IsOptional } from 'class-validator';
 import { Pagination } from '../../../common/shared/pagination.input';
 import { Sorting } from '../../../common/shared/sorting.input';

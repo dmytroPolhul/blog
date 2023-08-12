@@ -26,6 +26,10 @@ export class User extends BaseSchema {
   @Field(() => Boolean)
   status: boolean;
 
+  @Column({ type: 'varchar', nullable: true })
+  @Field(() => String)
+  token: string;
+
   @Column({ type: 'enum', enum: Role, default: Role.WRITER })
   @Field(() => Role)
   role: Role;

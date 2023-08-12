@@ -11,10 +11,21 @@ export class AuthResolver {
     @Args('password') password: string,
     @Context() context: any,
   ): Promise<string> {
-    const token = await this.authService.login(username, password);
+    const tokenPair = await this.authService.login(username, password);
     const res = context.res;
-    res.cookie('session', token, { httpOnly: true });
-    return token;
+    res.cookie('session', tokenPair.session, { httpOnly: true });
+    return tokenPair.access;
+  }
+
+  @Mutation(() => String)
+  async refresh(
+      @Context() context: any,
+  ): Promise<string> {
+    const cookies = context.req.cookies.session;
+    const tokenPair = await this.authService.refresh(cookies);
+    const res = context.res;
+    res.cookie('session', tokenPair.session, { httpOnly: true });
+    return tokenPair.access;
   }
 
   @Mutation(() => Boolean)

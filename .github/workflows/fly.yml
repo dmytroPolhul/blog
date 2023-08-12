@@ -17,7 +17,7 @@ jobs:
       - name: Install dependencies for migration
         run: npm install
       - name: Run TypeORM migrations
-        run: npm run migration:run
+        run: npm run mr
         env:
           DB_HOST: ${{ secrets.DB_HOST }}
           DB_PORT: ${{ secrets.POSTGRES_PORT }}

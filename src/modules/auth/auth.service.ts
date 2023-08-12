@@ -44,10 +44,13 @@ export class AuthService {
       jti: uuid.v4(),
     };
 
-    const refresh = this.jwtService.sign({...payload, exp: Math.floor(Date.now() / 1000) + 60 * 24 * 7});
-    await this.userService.update({...user, token: refresh})
+    const refresh = this.jwtService.sign({
+      ...payload,
+      exp: Math.floor(Date.now() / 1000) + 60 * 24 * 7,
+    });
+    await this.userService.update({ ...user, token: refresh });
     const access = this.jwtService.sign(payload);
-    return {access: access, session: refresh}
+    return { access: access, session: refresh };
   }
 
   async refresh(oldToken: string) {
@@ -76,10 +79,13 @@ export class AuthService {
       jti: uuid.v4(),
     };
 
-    const refresh = this.jwtService.sign({...payload, exp: Math.floor(Date.now() / 1000) + 60 * 24 * 7});
-    await this.userService.update({...user, token: refresh})
+    const refresh = this.jwtService.sign({
+      ...payload,
+      exp: Math.floor(Date.now() / 1000) + 60 * 24 * 7,
+    });
+    await this.userService.update({ ...user, token: refresh });
     const access = this.jwtService.sign(payload);
-    return {access: access, session: refresh}
+    return { access: access, session: refresh };
   }
 
   async validateUser(payload: any): Promise<any> {

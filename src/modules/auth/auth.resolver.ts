@@ -18,9 +18,7 @@ export class AuthResolver {
   }
 
   @Mutation(() => String)
-  async refresh(
-      @Context() context: any,
-  ): Promise<string> {
+  async refresh(@Context() context: any): Promise<string> {
     const cookies = context.req.cookies.session;
     const tokenPair = await this.authService.refresh(cookies);
     const res = context.res;

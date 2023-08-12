@@ -13,6 +13,7 @@ import { User } from '../user/entities/user.entity';
 import { BlogsResponse } from './dto/responses/blog.response';
 import { FilteringPaginationSorting } from './types/filteringPaginationSorting.input';
 import { Role } from '../../common/enums/userRole.enum';
+import { ForbiddenError } from '@nestjs/apollo';
 
 @Injectable()
 export class BlogService extends BaseService<Blog> {
@@ -25,6 +26,9 @@ export class BlogService extends BaseService<Blog> {
 
   async createBlog(request: CreateBlogInput): Promise<Blog> {
     const author = await this.userService.getUser(request.authorId);
+    if (author.role === Role.MODERATOR) {
+      throw new ForbiddenError('You are not performing this action');
+    }
     return this.blogRepository.create({ ...request, author });
   }
 
@@ -35,7 +39,7 @@ export class BlogService extends BaseService<Blog> {
     });
 
     if (user.role !== Role.MODERATOR && blog.author.id !== user.id) {
-      throw new UnauthorizedException('You can only update your own blogs.');
+      throw new ForbiddenError('You can only update your own blogs.');
     }
 
     delete request.id;

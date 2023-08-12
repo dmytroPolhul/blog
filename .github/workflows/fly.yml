@@ -11,8 +11,16 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: superfly/flyctl-actions/setup-flyctl@master
-      - run: |
-          flyctl deploy --remote-only
-          flyctl run script migrate
+      - run: flyctl deploy --remote-only
+      - name: Install dependencies for migration
+        run: npm install
+      - name: Run TypeORM migrations
+        run: npm run migration:run
         env:
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: ${{ secrets.POSTGRES_PORT }}
+          DB_USER: ${{ secrets.POSTGRES_USER }}
+          DB_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          DB_DATABASE: ${{ secrets.POSTGRES_DB }}
+          DB_TYPE: postgres
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}

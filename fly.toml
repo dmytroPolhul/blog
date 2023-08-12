@@ -9,6 +9,9 @@ processes = []
 [scripts]
 migrate = "npm run mr"
 
+[deploy]
+release_command = "npm run mg"
+
 [[services]]
   internal_port = 8080
   processes = ["app"]

@@ -6,6 +6,9 @@ kill_timeout = 5
 mounts = []
 processes = []
 
+[scripts]
+migrate = "npm run mr"
+
 [[services]]
   internal_port = 8080
   processes = ["app"]

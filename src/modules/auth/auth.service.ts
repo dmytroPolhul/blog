@@ -43,7 +43,43 @@ export class AuthService {
       exp: Math.floor(Date.now() / 1000) + Number(process.env.JWT_EXPIRE_IN),
       jti: uuid.v4(),
     };
-    return this.jwtService.sign(payload);
+
+    const refresh = this.jwtService.sign({...payload, exp: Math.floor(Date.now() / 1000) + 60 * 24 * 7});
+    await this.userService.update({...user, token: refresh})
+    const access = this.jwtService.sign(payload);
+    return {access: access, session: refresh}
+  }
+
+  async refresh(oldToken: string) {
+    let decoded;
+    try {
+      decoded = await this.jwtService.verify(oldToken);
+    } catch (e) {
+      throw new UnauthorizedException('Invalid token');
+    }
+
+    const user = await this.userService.findOne({
+      where: { id: decoded.userId, status: true, token: oldToken },
+      select: ['password', 'email', 'status', 'role', 'id'],
+    });
+
+    if (!user) {
+      throw new NotFoundException('User is not found');
+    }
+
+    const payload = {
+      userId: user.id,
+      role: user.role,
+      sub: user.email,
+      iat: Math.floor(Date.now() / 1000),
+      exp: Math.floor(Date.now() / 1000) + Number(process.env.JWT_EXPIRE_IN),
+      jti: uuid.v4(),
+    };
+
+    const refresh = this.jwtService.sign({...payload, exp: Math.floor(Date.now() / 1000) + 60 * 24 * 7});
+    await this.userService.update({...user, token: refresh})
+    const access = this.jwtService.sign(payload);
+    return {access: access, session: refresh}
   }
 
   async validateUser(payload: any): Promise<any> {

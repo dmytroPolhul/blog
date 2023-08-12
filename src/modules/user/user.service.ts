@@ -62,6 +62,8 @@ export class UserService extends BaseService<User> {
   }
 
   async deleteUser(id: string): Promise<User> {
+    const user = await this.getUser(id);
+    await this.userRepository.update({...user, status: false})
     return this.userRepository.delete({ id });
   }
 

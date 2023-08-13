@@ -14,6 +14,14 @@ export class BlogPost extends BaseSchema {
   @Field(() => String)
   mainText: string;
 
+  @Column({ type: 'boolean', default: false })
+  @Field(() => Boolean)
+  isPublish: boolean;
+
+  @Column({ type: 'varchar', nullable: true, array: true })
+  @Field(() => [String])
+  tags: string[];
+
   @ManyToOne(() => Blog, (blog) => blog.posts)
   @Field(() => Blog)
   blog: Blog;

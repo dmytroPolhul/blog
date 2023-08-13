@@ -37,7 +37,7 @@ export class BlogResolver {
     return this.blogService.updateBlog(user, request);
   }
 
-  @Mutation(() => Blog)
+  @Mutation(() => Boolean)
   @AuthPermission()
   deleteBlog(@Args('id') id: string, @Context() context): Promise<boolean> {
     const user = context.req.user;

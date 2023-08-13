@@ -6,6 +6,7 @@ import { mockRepository } from '../../../test/mock/mock.repository';
 import { BlogService } from '../blog/blog.service';
 import { UserService } from '../user/user.service';
 import { Role } from '../../common/enums/userRole.enum';
+import {BlogPost} from "./entities/blog-post.entity";
 
 describe('BlogPostResolver', () => {
   let resolver: BlogPostResolver;
@@ -39,6 +40,8 @@ describe('BlogPostResolver', () => {
             deletePost: jest.fn() as jest.Mock,
             findOne: jest.fn() as jest.Mock,
             getPost: jest.fn() as jest.Mock,
+            getMainBlog: jest.fn() as jest.Mock,
+            getPosts: jest.fn() as jest.Mock,
           },
         },
         {
@@ -159,5 +162,63 @@ describe('BlogPostResolver', () => {
     const result = await resolver.findOne(post.id);
     expect(result).toEqual(post);
     expect(blogPostService.getPost).toHaveBeenCalledWith(post.id);
+  });
+
+  it('should return a main blog by id', async () => {
+    const post = {
+      id: '5d5fc259-9727-416c-bf47-03125c5c5e07',
+      title: 'my new post',
+      mainText: 'description',
+      isPublish: true,
+      blog: {
+        id: 'a78e0f1d-2cff-4b57-b65c-c29311ecc762',
+      }
+    };
+
+    const blog = {
+      id: 'a78e0f1d-2cff-4b57-b65c-c29311ecc762',
+      title: 'blog',
+      description: 'desc',
+    };
+
+    (blogPostService.getMainBlog as jest.Mock).mockResolvedValue(blog);
+
+    const result = await resolver.blog(post as BlogPost);
+    expect(result).toEqual(blog);
+    expect(blogPostService.getMainBlog).toHaveBeenCalledWith(post.blog.id);
+  });
+
+  it('should return a blog posts with filter', async () => {
+    const post = {
+      id: '5d5fc259-9727-416c-bf47-03125c5c5e07',
+      title: 'my new post',
+      mainText: 'description',
+      isPublish: true,
+      blog: {
+        id: 'a78e0f1d-2cff-4b57-b65c-c29311ecc762',
+      }
+    };
+
+    const params = {
+      pagination: {
+        offset: 0,
+        limit: 10,
+      },
+      filter: {
+        isPublish: true,
+      }
+    };
+
+    const res = {
+      results: [post],
+      options: params,
+      total: 1
+    };
+
+    (blogPostService.getPosts as jest.Mock).mockResolvedValue(res);
+
+    const result = await resolver.blogPosts(params);
+    expect(result).toEqual(res);
+    expect(blogPostService.getPosts).toHaveBeenCalledWith(params);
   });
 });

@@ -39,7 +39,7 @@ export class BlogPostResolver {
     return this.blogPostService.updatePost(user, updateBlogPostInput);
   }
 
-  @Mutation(() => BlogPost)
+  @Mutation(() => Boolean)
   @AuthPermission()
   removeBlogPost(
     @Args('id', { type: () => String }) id: string,

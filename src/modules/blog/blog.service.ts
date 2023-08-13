@@ -91,6 +91,7 @@ export class BlogService extends BaseService<Blog> {
     const [results, total] = await this.blogRepository.findAndCount({
       ...whereOptions,
       ...posts,
+      relations: ['author']
     });
     return {
       results,

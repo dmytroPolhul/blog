@@ -100,7 +100,8 @@
       "main.ts",
       ".*.module.ts$",
       "database/.*",
-      "config/.*"
+      "config/.*",
+      "modules/baseModule/.*"
     ]
   },
   "config": {

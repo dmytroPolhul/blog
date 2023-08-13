@@ -249,15 +249,17 @@ describe('BlogPostService', () => {
     };
 
     mockRepository.findOne.mockResolvedValueOnce(existBlogPost);
-    mockRepository.update.mockResolvedValueOnce({ ...existBlogPost, ...request });
+    mockRepository.update.mockResolvedValueOnce({
+      ...existBlogPost,
+      ...request,
+    });
     mockRepository.findOneOrFail.mockResolvedValueOnce(planned);
-
 
     const result = await service.updatePost(author as User, request);
 
     expect(mockRepository.findOne).toHaveBeenCalledWith({
       where: { id: request.id },
-      relations: ['blog']
+      relations: ['blog'],
     });
     expect(result).toEqual(planned);
   });
@@ -292,15 +294,17 @@ describe('BlogPostService', () => {
     };
 
     mockRepository.findOne.mockResolvedValueOnce(existBlogPost);
-    mockRepository.update.mockResolvedValueOnce({ ...existBlogPost, ...request });
+    mockRepository.update.mockResolvedValueOnce({
+      ...existBlogPost,
+      ...request,
+    });
     mockRepository.findOneOrFail.mockResolvedValueOnce(planned);
-
 
     const result = await service.updatePost(moderator as User, request);
 
     expect(mockRepository.findOne).toHaveBeenCalledWith({
       where: { id: request.id },
-      relations: ['blog']
+      relations: ['blog'],
     });
     expect(result).toEqual(planned);
   });
@@ -333,11 +337,11 @@ describe('BlogPostService', () => {
     mockRepository.findOne.mockResolvedValueOnce(existBlogPost);
 
     await expect(service.updatePost(authorD as User, request)).rejects.toThrow(
-        ForbiddenError,
+      ForbiddenError,
     );
 
     await expect(service.updatePost(authorD as User, request)).rejects.toThrow(
-        'You can only update your own blog posts.',
+      'You can only update your own blog posts.',
     );
   });
 });

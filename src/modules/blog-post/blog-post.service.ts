@@ -33,13 +33,11 @@ export class BlogPostService extends BaseService<BlogPost> {
   ): Promise<BlogPost> {
     const post = await this.blogPostRepository.findOne({
       where: { id: request.id },
-      relations: ['blog']
+      relations: ['blog'],
     });
 
     if (user.role !== Role.MODERATOR && post.blog.author.id !== user.id) {
-      throw new ForbiddenError(
-        'You can only update your own blog posts.',
-      );
+      throw new ForbiddenError('You can only update your own blog posts.');
     }
 
     await this.blogPostRepository.update({ ...post, ...request });

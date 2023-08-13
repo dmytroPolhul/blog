@@ -11,7 +11,7 @@ import { BlogPostsResponse } from './dto/responses/blogPost.response';
 import { ILike } from 'typeorm';
 import { User } from '../user/entities/user.entity';
 import { Role } from '../../common/enums/userRole.enum';
-import {ForbiddenError} from "@nestjs/apollo";
+import { ForbiddenError } from '@nestjs/apollo';
 
 @Injectable()
 export class BlogPostService extends BaseService<BlogPost> {
@@ -86,9 +86,7 @@ export class BlogPostService extends BaseService<BlogPost> {
   async deletePost(user: User, id: string): Promise<boolean> {
     const post = await this.getPost(id);
     if (user.role !== Role.MODERATOR && post.blog.author.id !== user.id) {
-      throw new ForbiddenError(
-        'You can only delete your own blog posts.',
-      );
+      throw new ForbiddenError('You can only delete your own blog posts.');
     }
     const affectedPost = await this.blogPostRepository.hardDelete({ id });
     return !!affectedPost;

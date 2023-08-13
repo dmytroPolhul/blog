@@ -1,5 +1,11 @@
 import { InputType, Field } from '@nestjs/graphql';
-import {ArrayNotEmpty, IsArray, IsBoolean, IsOptional, IsString} from 'class-validator';
+import {
+  ArrayNotEmpty,
+  IsArray,
+  IsBoolean,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 @InputType()
 export class CreateBlogPostInput {
@@ -19,7 +25,7 @@ export class CreateBlogPostInput {
   @IsOptional()
   @IsArray()
   @ArrayNotEmpty()
-  @IsString({each: true})
+  @IsString({ each: true })
   tags?: string[];
 
   @Field(() => String)

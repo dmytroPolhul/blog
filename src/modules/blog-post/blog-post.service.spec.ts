@@ -3,9 +3,9 @@ import { BlogPostService } from './blog-post.service';
 import { BlogPostRepository } from './repositories/blogPost.repository';
 import { mockRepository } from '../../../test/mock/mock.repository';
 import { BlogService } from '../blog/blog.service';
-import {User} from "../user/entities/user.entity";
-import {Role} from "../../common/enums/userRole.enum";
-import {ForbiddenError} from "@nestjs/apollo";
+import { User } from '../user/entities/user.entity';
+import { Role } from '../../common/enums/userRole.enum';
+import { ForbiddenError } from '@nestjs/apollo';
 
 describe('BlogPostService', () => {
   let service: BlogPostService;
@@ -79,9 +79,9 @@ describe('BlogPostService', () => {
       blogId: blog.id,
     };
     const post = {
-        ...request,
+      ...request,
       id: 'dbfa8838-4317-4410-a854-84bd00281177',
-    }
+    };
 
     mockBlogService.getBlog.mockResolvedValueOnce(blog);
     mockRepository.create.mockResolvedValueOnce(post);
@@ -115,13 +115,16 @@ describe('BlogPostService', () => {
         author: {
           id: author.id,
         },
-      }
+      },
     };
 
     mockRepository.findOneOrFail.mockResolvedValueOnce(existBlogPost);
     mockRepository.hardDelete.mockResolvedValueOnce(1);
 
-    const result = await service.deletePost(moderator as User, existBlogPost.id);
+    const result = await service.deletePost(
+      moderator as User,
+      existBlogPost.id,
+    );
 
     expect(mockRepository.findOneOrFail).toHaveBeenCalledWith({
       where: { id: existBlogPost.id },
@@ -144,7 +147,7 @@ describe('BlogPostService', () => {
         author: {
           id: author.id,
         },
-      }
+      },
     };
 
     mockRepository.findOneOrFail.mockResolvedValueOnce(existBlogPost);
@@ -173,17 +176,19 @@ describe('BlogPostService', () => {
         author: {
           id: author.id,
         },
-      }
+      },
     };
 
     mockRepository.findOneOrFail.mockResolvedValueOnce(existBlogPost);
     mockRepository.findOneOrFail.mockResolvedValueOnce(existBlogPost);
 
-    await expect(service.deletePost(authorD as User, existBlogPost.id)).rejects.toThrow(ForbiddenError);
+    await expect(
+      service.deletePost(authorD as User, existBlogPost.id),
+    ).rejects.toThrow(ForbiddenError);
 
-    await expect(service.deletePost(authorD as User, existBlogPost.id)).rejects.toThrow(
-        'You can only delete your own blog posts.',
-    );
+    await expect(
+      service.deletePost(authorD as User, existBlogPost.id),
+    ).rejects.toThrow('You can only delete your own blog posts.');
   });
 
   it('should return blog post by id', async () => {
@@ -200,7 +205,7 @@ describe('BlogPostService', () => {
         author: {
           id: author.id,
         },
-      }
+      },
     };
 
     mockRepository.findOneOrFail.mockResolvedValueOnce(existBlogPost);

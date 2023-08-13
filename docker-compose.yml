@@ -23,7 +23,7 @@ services:
   blog:
     build:
       context: ./
-      dockerfile: ./Dockerfile
+      dockerfile: ./Dockerfile.dev
     container_name: blog
     env_file:
       - ./.env

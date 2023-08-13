@@ -218,4 +218,126 @@ describe('BlogPostService', () => {
     });
     expect(result).toBe(existBlogPost);
   });
+
+  it('should update blog post by blog post author', async () => {
+    const existBlogPost = {
+      id: 'dbfa8838-4317-4410-a854-84bd00281177',
+      title: 'New blog post',
+      mainText: 'blog post about testing',
+      isPublish: true,
+      tags: ['testing', 'jest'],
+      blog: {
+        id: '68678369-5aaa-4ddd-82f1-624c6dc10066',
+        title: 'New blog',
+        description: 'blog about testing',
+        author: {
+          id: author.id,
+        },
+      },
+    };
+
+    const request = {
+      id: 'dbfa8838-4317-4410-a854-84bd00281177',
+      title: 'Updated blog post',
+      description: 'blog about testing 2',
+      tags: ['jest', 'mocha'],
+    };
+
+    const planned = {
+      ...existBlogPost,
+      ...request,
+    };
+
+    mockRepository.findOne.mockResolvedValueOnce(existBlogPost);
+    mockRepository.update.mockResolvedValueOnce({ ...existBlogPost, ...request });
+    mockRepository.findOneOrFail.mockResolvedValueOnce(planned);
+
+
+    const result = await service.updatePost(author as User, request);
+
+    expect(mockRepository.findOne).toHaveBeenCalledWith({
+      where: { id: request.id },
+      relations: ['blog']
+    });
+    expect(result).toEqual(planned);
+  });
+
+  it('should update blog post by moderator', async () => {
+    const existBlogPost = {
+      id: 'dbfa8838-4317-4410-a854-84bd00281177',
+      title: 'New blog post',
+      mainText: 'blog post about testing',
+      isPublish: true,
+      tags: ['testing', 'jest'],
+      blog: {
+        id: '68678369-5aaa-4ddd-82f1-624c6dc10066',
+        title: 'New blog',
+        description: 'blog about testing',
+        author: {
+          id: author.id,
+        },
+      },
+    };
+
+    const request = {
+      id: 'dbfa8838-4317-4410-a854-84bd00281177',
+      title: 'Updated blog post',
+      description: 'blog about testing 2',
+      tags: ['jest', 'mocha'],
+    };
+
+    const planned = {
+      ...existBlogPost,
+      ...request,
+    };
+
+    mockRepository.findOne.mockResolvedValueOnce(existBlogPost);
+    mockRepository.update.mockResolvedValueOnce({ ...existBlogPost, ...request });
+    mockRepository.findOneOrFail.mockResolvedValueOnce(planned);
+
+
+    const result = await service.updatePost(moderator as User, request);
+
+    expect(mockRepository.findOne).toHaveBeenCalledWith({
+      where: { id: request.id },
+      relations: ['blog']
+    });
+    expect(result).toEqual(planned);
+  });
+
+  it('should return Forbidden error if user is not an author', async () => {
+    const existBlogPost = {
+      id: 'dbfa8838-4317-4410-a854-84bd00281177',
+      title: 'New blog post',
+      mainText: 'blog post about testing',
+      isPublish: true,
+      tags: ['testing', 'jest'],
+      blog: {
+        id: '68678369-5aaa-4ddd-82f1-624c6dc10066',
+        title: 'New blog',
+        description: 'blog about testing',
+        author: {
+          id: author.id,
+        },
+      },
+    };
+
+    const request = {
+      id: 'dbfa8838-4317-4410-a854-84bd00281177',
+      title: 'Updated blog post',
+      description: 'blog about testing 2',
+      tags: ['jest', 'mocha'],
+    };
+
+    mockRepository.findOne.mockResolvedValueOnce(existBlogPost);
+    mockRepository.findOne.mockResolvedValueOnce(existBlogPost);
+
+    await expect(service.updatePost(authorD as User, request)).rejects.toThrow(
+        ForbiddenError,
+    );
+
+    await expect(service.updatePost(authorD as User, request)).rejects.toThrow(
+        'You can only update your own blog posts.',
+    );
+  });
 });

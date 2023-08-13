@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { BaseService } from '../baseModule/base.service';
 import { BlogPost } from './entities/blog-post.entity';
 import { BlogPostRepository } from './repositories/blogPost.repository';
@@ -33,10 +33,11 @@ export class BlogPostService extends BaseService<BlogPost> {
   ): Promise<BlogPost> {
     const post = await this.blogPostRepository.findOne({
       where: { id: request.id },
+      relations: ['blog']
     });
 
     if (user.role !== Role.MODERATOR && post.blog.author.id !== user.id) {
-      throw new UnauthorizedException(
+      throw new ForbiddenError(
         'You can only update your own blog posts.',
       );
     }

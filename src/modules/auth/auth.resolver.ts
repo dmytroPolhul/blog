@@ -7,11 +7,11 @@ export class AuthResolver {
 
   @Mutation(() => String)
   async login(
-    @Args('username') username: string,
+    @Args('email') email: string,
     @Args('password') password: string,
     @Context() context: any,
   ): Promise<string> {
-    const tokenPair = await this.authService.login(username, password);
+    const tokenPair = await this.authService.login(email, password);
     const res = context.res;
     res.cookie('session', tokenPair.session, { httpOnly: true });
     return tokenPair.access;

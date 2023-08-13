@@ -1,7 +1,4 @@
-import {
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { BaseService } from '../baseModule/base.service';
 import { Blog } from './entities/blog.entity';
 import { BlogRepository } from './repositories/blog.repository';
@@ -112,15 +109,5 @@ export class BlogService extends BaseService<Blog> {
 
   async findRelatedPosts(id: string): Promise<Blog[]> {
     return this.blogRepository.find({ where: { id }, relations: ['posts'] });
-  }
-
-  async checkOwnership(blogId: string, userId: string): Promise<boolean> {
-    const blog = await this.getBlog(blogId);
-
-    if (!blog) {
-      throw new NotFoundException('Blog not found');
-    }
-
-    return blog.author.id === userId;
   }
 }

@@ -7,6 +7,7 @@ import { Role } from '../../common/enums/userRole.enum';
 import { ForbiddenError } from '@nestjs/apollo';
 import { User } from '../user/entities/user.entity';
 import { BadRequestException } from '@nestjs/common';
+import { Ordering } from '../../common/enums/ordering.enum';
 
 describe('BlogService', () => {
   let service: BlogService;
@@ -308,5 +309,170 @@ describe('BlogService', () => {
     await expect(service.getBlog(id)).resolves.toThrow(
       'Entity dbfa8838-4317-4410-a854-84bd00281167. Not Found',
     );
+  });
+
+  it('should return blog author', async () => {
+    const existBlog = {
+      id: 'dbfa8838-4317-4410-a854-84bd00281177',
+      title: 'New blog',
+      description: 'blog about testing',
+      author: {
+        id: '593c7b92-1880-4932-b1eb-201e69beb36f',
+      },
+      posts: [],
+    };
+
+    mockUserService.getUser.mockResolvedValueOnce(author);
+
+    const result = await service.getAuthor(existBlog.author.id);
+
+    expect(result).toEqual(author);
+  });
+
+  it('should return blog with related posts', async () => {
+    const existBlog = {
+      id: 'dbfa8838-4317-4410-a854-84bd00281177',
+      title: 'New blog',
+      description: 'blog about testing',
+      author: {
+        id: '593c7b92-1880-4932-b1eb-201e69beb36f',
+      },
+      posts: [
+        {
+          id: '128454d1-8b24-40f4-9798-6f6b44e380ba',
+          title: 'post 1',
+        },
+        {
+          id: '612f44e8-9cab-457c-ab51-a7368c2dfd35',
+          title: 'post 1',
+        },
+      ],
+    };
+
+    mockRepository.find.mockResolvedValueOnce(existBlog);
+
+    const result = await service.findRelatedPosts(existBlog.id);
+
+    expect(mockRepository.find).toHaveBeenCalledWith({
+      where: { id: existBlog.id },
+      relations: ['posts'],
+    });
+
+    expect(result).toEqual(existBlog);
+  });
+
+  it('should return blogs with filtration', async () => {
+    const existBlogs = [
+      {
+        id: 'dbfa8838-4317-4410-a854-84bd00281177',
+        title: 'New blog',
+        description: 'blog about testing',
+        author: {
+          id: '593c7b92-1880-4932-b1eb-201e69beb36f',
+        },
+        posts: [
+          {
+            id: '128454d1-8b24-40f4-9798-6f6b44e380ba',
+            title: 'post 1',
+          },
+          {
+            id: '612f44e8-9cab-457c-ab51-a7368c2dfd35',
+            title: 'post 2',
+          },
+        ],
+      },
+      {
+        id: '03ef3458-79a8-4f59-a828-c2620894b91d',
+        title: 'New blog 2',
+        description: 'blog about testing 2',
+        author: {
+          id: authorD.id,
+        },
+        posts: [
+          {
+            id: '58cb0580-a1d8-4532-ac9f-ba03dc1a5023',
+            title: 'post sec 1',
+          },
+          {
+            id: '6c260cd4-01e5-4d41-a7ad-72320b1b2c8f',
+            title: 'post sec 2',
+          },
+        ],
+      },
+    ];
+
+    const request = {
+      pagination: {
+        offset: 0,
+        limit: 5,
+      },
+      sorting: {
+        field: 'title',
+        order: Ordering.ASC,
+      },
+      filter: {
+        includePosts: true,
+      },
+    };
+
+    mockRepository.findAndCount.mockResolvedValueOnce([
+      existBlogs,
+      existBlogs.length,
+    ]);
+
+    const result = await service.getBlogs(request);
+
+    expect(result).toEqual({
+      results: existBlogs,
+      options: { ...request },
+      total: existBlogs.length,
+    });
+  });
+
+  it('should return blogs with filtration v2', async () => {
+    const existBlogs = [
+      {
+        id: 'dbfa8838-4317-4410-a854-84bd00281177',
+        title: 'New blog',
+        description: 'blog about testing',
+        author: {
+          id: '593c7b92-1880-4932-b1eb-201e69beb36f',
+        },
+      },
+      {
+        id: '03ef3458-79a8-4f59-a828-c2620894b91d',
+        title: 'New blog 2',
+        description: 'blog about testing 2',
+        author: {
+          id: authorD.id,
+        },
+      },
+    ];
+
+    const request = {
+      pagination: {
+        offset: 0,
+        limit: 5,
+      },
+      sorting: {
+        field: 'title',
+        order: Ordering.ASC,
+      },
+      filter: {
+        includePosts: false,
+        blogId: existBlogs[0].id,
+        authorId: '593c7b92-1880-4932-b1eb-201e69beb36f',
+      },
+    };
+
+    mockRepository.findAndCount.mockResolvedValueOnce([existBlogs[0], 1]);
+
+    const result = await service.getBlogs(request);
+
+    expect(result).toEqual({
+      results: existBlogs[0],
+      options: { ...request },
+      total: 1,
+    });
   });
 });

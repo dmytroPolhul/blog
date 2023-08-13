@@ -6,7 +6,7 @@ import { mockRepository } from '../../../test/mock/mock.repository';
 import { BlogService } from '../blog/blog.service';
 import { UserService } from '../user/user.service';
 import { Role } from '../../common/enums/userRole.enum';
-import {BlogPost} from "./entities/blog-post.entity";
+import { BlogPost } from './entities/blog-post.entity';
 
 describe('BlogPostResolver', () => {
   let resolver: BlogPostResolver;
@@ -172,7 +172,7 @@ describe('BlogPostResolver', () => {
       isPublish: true,
       blog: {
         id: 'a78e0f1d-2cff-4b57-b65c-c29311ecc762',
-      }
+      },
     };
 
     const blog = {
@@ -196,7 +196,7 @@ describe('BlogPostResolver', () => {
       isPublish: true,
       blog: {
         id: 'a78e0f1d-2cff-4b57-b65c-c29311ecc762',
-      }
+      },
     };
 
     const params = {
@@ -206,13 +206,13 @@ describe('BlogPostResolver', () => {
       },
       filter: {
         isPublish: true,
-      }
+      },
     };
 
     const res = {
       results: [post],
       options: params,
-      total: 1
+      total: 1,
     };
 
     (blogPostService.getPosts as jest.Mock).mockResolvedValue(res);

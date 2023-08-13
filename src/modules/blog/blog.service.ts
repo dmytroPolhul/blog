@@ -84,7 +84,7 @@ export class BlogService extends BaseService<Blog> {
       skip: request?.pagination?.offset,
       take: request?.pagination?.limit,
       order: {
-        [request.sorting.field]: request.sorting.order,
+        [request?.sorting?.field]: request?.sorting?.order,
       },
     };
 
@@ -97,7 +97,7 @@ export class BlogService extends BaseService<Blog> {
       options: {
         pagination: request?.pagination,
         sorting: request?.sorting,
-        filter: request.filter,
+        filter: request?.filter,
       },
       total,
     };

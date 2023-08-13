@@ -1,73 +1,66 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Blog GraphQL API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+This repository contains the GraphQL API for the Blog application.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Prerequisites
 
-## Description
+Before you begin, ensure you have the following installed:
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- [Node.js](https://nodejs.org/)
+- [npm](https://www.npmjs.com/)
+- [Docker](https://www.docker.com/products/docker-desktop) (For Docker-based development and testing)
 
-## Installation
+## Useful Links
 
-```bash
-$ npm install
-```
+- [API Documentation](https://blog-docs.onrender.com/main-documentation)
+- [Production GraphQL Playground](https://blog-graphql.fly.dev/graphql)
 
-## Running the app
+## Getting Started
 
-```bash
-# development
-$ npm run start
+### Installation
 
-# watch mode
-$ npm run start:dev
+1. Install the required packages:
+   ```bash
+   npm install
+   ```
 
-# production mode
-$ npm run start:prod
-```
+   Alternatively, you can use the shorthand:
+   ```bash
+   npm i
+   ```
 
-## Test
+2. Review the `.env-example` file in the root of the project. Create a `.env` file in the same location and populate it with your specific environment variables.
 
-```bash
-# unit tests
-$ npm run test
+3. Start the application:
+   ```bash
+   npm run start
+   ```
 
-# e2e tests
-$ npm run test:e2e
+## Testing
 
-# test coverage
-$ npm run test:cov
-```
+### Running Tests
 
-## Support
+1. To execute the tests, run:
+   ```bash
+   npm run test
+   ```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### Test Coverage
 
-## Stay in touch
+1. To generate a test coverage report, run:
+   ```bash
+   npm run test:cov
+   ```
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## Docker
 
-## License
+For local testing and development using Docker:
 
-Nest is [MIT licensed](LICENSE).
+1. Start the Docker containers:
+   ```bash
+   docker compose up
+   ```
+
+## Additional Information
+
+All available commands can be found in the `scripts` section of the `package.json` file. The `.env-example` file in the root directory provides a template for environment variables.

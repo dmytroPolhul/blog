@@ -11,4 +11,12 @@ export class BlogPostFilter {
   @Field({ nullable: true })
   @IsOptional()
   title?: string;
+
+  @Field({ nullable: true })
+  @IsOptional()
+  isPublish?: boolean;
+
+  @Field({ nullable: true })
+  @IsOptional()
+  tag?: string;
 }

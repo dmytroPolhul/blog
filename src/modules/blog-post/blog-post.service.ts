@@ -8,7 +8,7 @@ import { UpdateBlogPostInput } from './dto/update-blog-post.input';
 import { Blog } from '../blog/entities/blog.entity';
 import { BlogPostFilteringPaginationSorting } from './types/filteringPaginationSorting.input';
 import { BlogPostsResponse } from './dto/responses/blogPost.response';
-import { ILike } from 'typeorm';
+import { Any, ILike } from 'typeorm';
 import { User } from '../user/entities/user.entity';
 import { Role } from '../../common/enums/userRole.enum';
 import { ForbiddenError } from '@nestjs/apollo';
@@ -57,6 +57,10 @@ export class BlogPostService extends BaseService<BlogPost> {
     const whereOptions = {
       where: {
         id: request?.filter?.blogPostId,
+        isPublish: request?.filter?.isPublish
+          ? request?.filter?.isPublish
+          : undefined,
+        tags: undefined,
         title: request?.filter?.title
           ? ILike(`%${request?.filter?.title}%`)
           : undefined,
@@ -67,6 +71,11 @@ export class BlogPostService extends BaseService<BlogPost> {
         [request?.sorting?.field]: request?.sorting?.order,
       },
     };
+
+    if (request?.filter?.tag) {
+      whereOptions.where.tags = Any([request?.filter?.tag]);
+    }
+
     const [results, total] = await this.blogPostRepository.findAndCount({
       ...whereOptions,
     });

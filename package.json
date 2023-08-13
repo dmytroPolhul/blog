@@ -30,6 +30,7 @@
   },
   "dependencies": {
     "@apollo/server": "^4.9.1",
+    "@magidoc/cli": "^4.0.0",
     "@nestjs/apollo": "^12.0.7",
     "@nestjs/common": "^9.0.0",
     "@nestjs/core": "^9.0.0",

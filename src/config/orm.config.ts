@@ -25,7 +25,7 @@ export const getTypeORMConfig = (): DataSourceOptions => {
     synchronize: false,
     logger: new DatabaseLogger(),
     entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-    migrations: [__dirname + '/../database/migrations/*.ts'],
+    migrations: [__dirname + '/../database/migrations/*.{js,ts}'],
     ssl: !!isNeedToProvideSslOptions,
     extra,
     namingStrategy: new CustomNamingStrategy(),

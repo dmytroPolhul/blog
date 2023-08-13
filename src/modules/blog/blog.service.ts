@@ -1,7 +1,6 @@
 import {
   Injectable,
   NotFoundException,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { BaseService } from '../baseModule/base.service';
 import { Blog } from './entities/blog.entity';
@@ -57,7 +56,7 @@ export class BlogService extends BaseService<Blog> {
     });
 
     if (user.role !== Role.MODERATOR && blog.author.id !== user.id) {
-      throw new UnauthorizedException('You can only delete your own blogs.');
+      throw new ForbiddenError('You can only delete your own blogs.');
     }
 
     const affectedBlog = await this.blogRepository.hardDelete({ id });

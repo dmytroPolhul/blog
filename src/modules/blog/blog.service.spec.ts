@@ -6,6 +6,7 @@ import { UserService } from '../user/user.service';
 import { Role } from '../../common/enums/userRole.enum';
 import { ForbiddenError } from '@nestjs/apollo';
 import { User } from '../user/entities/user.entity';
+import { BadRequestException } from '@nestjs/common';
 
 describe('BlogService', () => {
   let service: BlogService;
@@ -201,6 +202,111 @@ describe('BlogService', () => {
 
     await expect(service.updateBlog(authorD as User, request)).rejects.toThrow(
       'You can only update your own blogs.',
+    );
+  });
+
+  it('should delete blog by Moderator', async () => {
+    const existBlog = {
+      id: 'dbfa8838-4317-4410-a854-84bd00281177',
+      title: 'New blog',
+      description: 'blog about testing',
+      author: {
+        id: '593c7b92-1880-4932-b1eb-201e69beb36f',
+      },
+    };
+
+    mockRepository.findOne.mockResolvedValueOnce(existBlog);
+    mockRepository.hardDelete.mockResolvedValueOnce(1);
+
+    const result = await service.deleteBlog(moderator as User, existBlog.id);
+
+    expect(mockRepository.findOne).toHaveBeenCalledWith({
+      where: { id: existBlog.id },
+      relations: ['author'],
+    });
+    expect(result).toBe(true);
+  });
+
+  it('should delete blog by owner', async () => {
+    const existBlog = {
+      id: 'dbfa8838-4317-4410-a854-84bd00281177',
+      title: 'New blog',
+      description: 'blog about testing',
+      author: {
+        id: '593c7b92-1880-4932-b1eb-201e69beb36f',
+      },
+    };
+
+    mockRepository.findOne.mockResolvedValueOnce(existBlog);
+    mockRepository.hardDelete.mockResolvedValueOnce(1);
+
+    const result = await service.deleteBlog(author as User, existBlog.id);
+
+    expect(mockRepository.findOne).toHaveBeenCalledWith({
+      where: { id: existBlog.id },
+      relations: ['author'],
+    });
+    expect(result).toBe(true);
+  });
+
+  it('should return Forbidden error if user is not author', async () => {
+    const existBlog = {
+      id: 'dbfa8838-4317-4410-a854-84bd00281177',
+      title: 'New blog',
+      description: 'blog about testing',
+      author: {
+        id: '593c7b92-1880-4932-b1eb-201e69beb36f',
+      },
+    };
+
+    mockRepository.findOne.mockResolvedValueOnce(existBlog);
+    mockRepository.findOne.mockResolvedValueOnce(existBlog);
+
+    await expect(
+      service.deleteBlog(authorD as User, existBlog.id),
+    ).rejects.toThrow(ForbiddenError);
+
+    await expect(
+      service.deleteBlog(authorD as User, existBlog.id),
+    ).rejects.toThrow('You can only delete your own blogs.');
+  });
+
+  it('should return blog by id', async () => {
+    const existBlog = {
+      id: 'dbfa8838-4317-4410-a854-84bd00281177',
+      title: 'New blog',
+      description: 'blog about testing',
+      author: {
+        id: '593c7b92-1880-4932-b1eb-201e69beb36f',
+      },
+      posts: [],
+    };
+
+    mockRepository.findOneOrFail.mockResolvedValueOnce(existBlog);
+
+    const result = await service.getBlog(existBlog.id);
+
+    expect(mockRepository.findOneOrFail).toHaveBeenCalledWith({
+      where: { id: existBlog.id },
+      relations: ['author', 'posts'],
+    });
+    expect(result).toEqual(existBlog);
+  });
+
+  it('should return error if blog does not exist', async () => {
+    const id = 'dbfa8838-4317-4410-a854-84bd00281167';
+
+    mockRepository.findOneOrFail.mockResolvedValueOnce(
+      new BadRequestException(`Entity ${id}. Not Found`),
+    );
+    mockRepository.findOneOrFail.mockResolvedValueOnce(
+      new BadRequestException(`Entity ${id}. Not Found`),
+    );
+
+    await expect(service.getBlog(id)).resolves.toThrow(BadRequestException);
+
+    await expect(service.getBlog(id)).resolves.toThrow(
+      'Entity dbfa8838-4317-4410-a854-84bd00281167. Not Found',
     );
   });
 });

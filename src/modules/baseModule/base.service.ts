@@ -6,7 +6,7 @@ import {
   FindOptionsWhere,
   ObjectLiteral,
 } from 'typeorm';
-import { CrudRepository, TransactionOptions } from './base.repository';
+import { CrudRepository, TransactionOptions } from './base.repository.dep';
 
 @Injectable()
 export class BaseService<T extends ObjectLiteral> {

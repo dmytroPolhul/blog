@@ -1,8 +1,14 @@
-import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { getTypeORMConfig } from '../config/orm.config';
+import { Module, Global } from '@nestjs/common';
+import { db } from '../config/pg.config';
 
+@Global()
 @Module({
-  imports: [TypeOrmModule.forRoot(getTypeORMConfig())],
+  providers: [
+    {
+      provide: 'DATABASE_POOL',
+      useValue: db,
+    },
+  ],
+  exports: ['DATABASE_POOL'],
 })
 export class DatabaseModule {}

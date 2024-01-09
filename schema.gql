@@ -116,11 +116,11 @@ type Mutation {
   createBlog(createBlogInput: CreateBlogInput!): Blog!
   createBlogPost(createBlogPostInput: CreateBlogPostInput!): BlogPost!
   createUser(createUserInput: CreateUserInput!): User!
-  deleteBlog(id: String!): Blog!
+  deleteBlog(id: String!): Boolean!
   login(email: String!, password: String!): String!
   logout: Boolean!
   refresh: String!
-  removeBlogPost(id: String!): BlogPost!
+  removeBlogPost(id: String!): Boolean!
   removeUser(id: String!): User!
   updateBlog(updateBlogInput: UpdateBlogInput!): Blog!
   updateBlogPost(updateBlogPostInput: UpdateBlogPostInput!): BlogPost!

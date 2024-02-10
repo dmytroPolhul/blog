@@ -13,9 +13,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install dependencies for actions
-        run: |
-         npm install
-         npm i pnpm
+        run: npm install
 
       - name: Testing
         run: npm run test
@@ -27,6 +25,9 @@ jobs:
         run: flyctl deploy --remote-only
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+      - name: Install pnpm for migrations
+        run: npm install -g pnpm
 
       - name: Connect to database and run migrations
         run: |

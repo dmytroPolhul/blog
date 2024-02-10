@@ -5,8 +5,8 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
-import { UserService } from '../../user/user.service';
 import { GqlExecutionContext } from '@nestjs/graphql';
+import { UserService } from '../../user/user.service';
 
 @Injectable()
 export class AuthUserGuard implements CanActivate {
@@ -28,9 +28,7 @@ export class AuthUserGuard implements CanActivate {
       throw new UnauthorizedException(e);
     }
 
-    const user = await this.userService.findOne({
-      where: { email: tokenData.sub },
-    });
+    const user = await this.userService.getUserByEmail(tokenData.sub);
 
     if (user) {
       request.user = user;

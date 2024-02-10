@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserResolver } from './user.resolver';
-import { UserService } from './user.service';
 import { Role } from '../../common/enums/userRole.enum';
+import { UserService } from './user.service';
 
 describe('UserResolver', () => {
   let resolver: UserResolver;
@@ -40,6 +40,7 @@ describe('UserResolver', () => {
       password: '1234',
       status: true,
       role: Role.MODERATOR,
+      isActive: false,
     };
 
     const createdUser = {

@@ -1,13 +1,10 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { Pool } from 'pg';
+import { InferSelectModel, Table } from 'drizzle-orm/table';
+import { db } from '../../config/pg.config';
 
-@Injectable()
-export abstract class BaseRepository<_T> {
-  protected tableName: string;
-  protected constructor(
-    @Inject('DATABASE_POOL') protected readonly pool: Pool,
-    tableName: string,
-  ) {
-    this.tableName = tableName;
+export abstract class BaseRepository<T extends Table> {
+  protected constructor(protected readonly model: T) {}
+
+  async findAll(): Promise<InferSelectModel<T>[]> {
+    return db.select().from(this.model) as any as InferSelectModel<T>[];
   }
 }

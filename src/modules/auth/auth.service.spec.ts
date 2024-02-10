@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
 import { JwtService } from '@nestjs/jwt';
-import { UserService } from '../user/user.service';
 import { NotFoundException, UnauthorizedException } from '@nestjs/common';
-import { User } from '../user/entities/user.entity';
 import { Role } from '../../common/enums/userRole.enum';
+import { UserService } from '../user/user.service';
+import { User } from '../user/objectTypes/user.objectType';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -18,8 +18,11 @@ describe('AuthService', () => {
     };
 
     const mockUserService = {
-      findOne: jest.fn(),
-      update: jest.fn(),
+      updateUser: jest.fn(),
+      getUserByEmail: jest.fn(),
+      getAuthByEmail: jest.fn(),
+      updateUserToken: jest.fn(),
+      getAuthByIdAndToken: jest.fn(),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -46,7 +49,7 @@ describe('AuthService', () => {
   });
 
   it('should throw NotFoundException if user is not found', async () => {
-    (userService.findOne as jest.Mock).mockResolvedValue(null);
+    (userService.getAuthByIdAndToken as jest.Mock).mockResolvedValue(null);
     await expect(service.login('test@example.com', 'password')).rejects.toThrow(
       NotFoundException,
     );
@@ -60,7 +63,9 @@ describe('AuthService', () => {
       password: 'hashedPassword',
     };
 
-    jest.spyOn(userService, 'findOne').mockResolvedValue(mockUser as User);
+    jest
+      .spyOn(userService, 'getAuthByEmail')
+      .mockResolvedValue(mockUser as User);
     jest.spyOn(service, 'validatePassword').mockResolvedValue(false);
 
     await expect(service.login('test@example.com', 'password')).rejects.toThrow(
@@ -76,7 +81,7 @@ describe('AuthService', () => {
       password: 'hashedPassword',
     };
 
-    (userService.findOne as jest.Mock).mockResolvedValue(mockUser);
+    (userService.getAuthByEmail as jest.Mock).mockResolvedValue(mockUser);
     jest.spyOn(service, 'validatePassword').mockResolvedValue(true);
     (jwtService.sign as jest.Mock).mockReturnValue('mockToken');
     const result = await service.login('test@example.com', 'hashedPassword');
@@ -100,7 +105,7 @@ describe('AuthService', () => {
       sub: 'test@example.com',
     };
     jest.spyOn(jwtService, 'verify').mockReturnValue(mockDecoded);
-    jest.spyOn(userService, 'findOne').mockResolvedValue(undefined);
+    jest.spyOn(userService, 'getAuthByEmail').mockResolvedValue(undefined);
 
     await expect(service.refresh('validToken')).rejects.toThrow(
       NotFoundException,
@@ -121,13 +126,13 @@ describe('AuthService', () => {
       role: Role.MODERATOR,
     };
     const updatedUser = {
-      ...mockUser,
+      id: mockUser.id,
       token: 'newToken',
     };
     jest.spyOn(jwtService, 'verify').mockReturnValue(mockDecoded);
-    jest.spyOn(userService, 'findOne').mockResolvedValue(mockUser as User);
+    jest.spyOn(userService, 'getAuthByIdAndToken').mockResolvedValue(mockUser);
     jest.spyOn(jwtService, 'sign').mockReturnValue('newToken');
-    jest.spyOn(userService, 'update').mockResolvedValue(updatedUser as User);
+    jest.spyOn(userService, 'updateUserToken').mockResolvedValue(updatedUser);
 
     const result = await service.refresh('validToken');
     expect(result).toEqual({ access: 'newToken', session: 'newToken' });

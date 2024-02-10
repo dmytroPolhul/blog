@@ -9,11 +9,12 @@ export class AuthResolver {
   async login(
     @Args('email') email: string,
     @Args('password') password: string,
-    @Context() context: any,
+    @Context() _context: any,
   ): Promise<string> {
     const tokenPair = await this.authService.login(email, password);
-    const res = context.res;
-    res.cookie('session', tokenPair.session, { httpOnly: true });
+    // const { reply } = context;
+    // console.log(context)
+    // reply.setCookie('session', tokenPair.session, { httpOnly: true });
     return tokenPair.access;
   }
 
@@ -21,15 +22,15 @@ export class AuthResolver {
   async refresh(@Context() context: any): Promise<string> {
     const cookies = context.req.cookies.session;
     const tokenPair = await this.authService.refresh(cookies);
-    const res = context.res;
-    res.cookie('session', tokenPair.session, { httpOnly: true });
+    // const res = context.res;
+    // res.cookie('session', tokenPair.session, { httpOnly: true });
     return tokenPair.access;
   }
 
   @Mutation(() => Boolean)
-  logout(@Context() context: any): boolean {
-    const res = context.res;
-    res.clearCookie('session');
+  logout(@Context() _context: any): boolean {
+    // const res = context.res;
+    // res.clearCookie('session');
     return true;
   }
 }

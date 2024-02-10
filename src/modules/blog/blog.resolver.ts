@@ -8,14 +8,14 @@ import {
   Resolver,
 } from '@nestjs/graphql';
 import { BlogService } from './blog.service';
-import { Blog } from './entities/blog.entity';
 import { CreateBlogInput } from './dto/requests/create-blog.input';
 import { UpdateBlogInput } from './dto/requests/update-blog.input';
-import { User } from '../user/entities/user.entity';
 import { BlogsResponse } from './dto/responses/blog.response';
 import { FilteringPaginationSorting } from './types/filteringPaginationSorting.input';
 import { AuthPermission } from '../../common/decorators/auth.decorator';
 import { Role } from '../../common/enums/userRole.enum';
+import { Blog } from './objectTypes/blog.objectType';
+import { User } from '../user/objectTypes/user.objectType';
 
 @Resolver(() => Blog)
 export class BlogResolver {
@@ -56,12 +56,12 @@ export class BlogResolver {
     return this.blogService.getBlogs(filter);
   }
 
-  @Query(() => [Blog])
-  async getBlogPosts(
-    @Args('id', { type: () => String }) id: string,
-  ): Promise<Blog[]> {
-    return this.blogService.findRelatedPosts(id);
-  }
+  // @Query(() => [Blog])
+  // async getBlogPosts(
+  //   @Args('id', { type: () => String }) id: string,
+  // ): Promise<Blog[]> {
+  //   return this.blogService.findRelatedPosts(id);
+  // }
 
   @ResolveField(() => User)
   author(@Parent() blog: Blog): Promise<User> {

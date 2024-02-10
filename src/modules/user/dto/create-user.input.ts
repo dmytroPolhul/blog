@@ -24,6 +24,10 @@ export class CreateUserInput {
   @IsBoolean()
   status!: boolean;
 
+  @Field(() => Boolean, { defaultValue: false })
+  @IsBoolean()
+  isActive!: boolean;
+
   @Field(() => Role, { defaultValue: Role.WRITER })
   @IsEnum(Role)
   role!: Role;

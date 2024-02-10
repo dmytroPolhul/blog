@@ -1,18 +1,19 @@
 import { Injectable } from '@nestjs/common';
-import { BaseService } from '../baseModule/base.service';
-import { Blog } from './entities/blog.entity';
-import { BlogRepository } from './repositories/blog.repository';
 import { UpdateBlogInput } from './dto/requests/update-blog.input';
 import { CreateBlogInput } from './dto/requests/create-blog.input';
-import { UserService } from '../user/user.service';
-import { User } from '../user/entities/user.entity';
 import { BlogsResponse } from './dto/responses/blog.response';
 import { FilteringPaginationSorting } from './types/filteringPaginationSorting.input';
 import { Role } from '../../common/enums/userRole.enum';
 import { ForbiddenError } from '@nestjs/apollo';
+import { UserService } from '../user/user.service';
+import { BlogRepository } from './repositories/blog.repository';
+import { BaseService } from '../baseModule/base.service';
+import { BlogTable } from './entities/blog.schema';
+import { Blog } from './objectTypes/blog.objectType';
+import { User } from '../user/objectTypes/user.objectType';
 
 @Injectable()
-export class BlogService extends BaseService<Blog> {
+export class BlogService extends BaseService<typeof BlogTable> {
   constructor(
     private userService: UserService,
     private blogRepository: BlogRepository,
@@ -25,46 +26,44 @@ export class BlogService extends BaseService<Blog> {
     if (author.role === Role.MODERATOR) {
       throw new ForbiddenError('You are not performing this action');
     }
-    return this.blogRepository.create({ ...request, author });
+    return this.blogRepository.save({ ...request, authorId: author.id });
   }
 
   async updateBlog(user: User, request: UpdateBlogInput): Promise<Blog> {
-    const blog = await this.blogRepository.findOne({
-      where: { id: request.id },
-      relations: ['author'],
-    });
+    const blog = await this.blogRepository.findOneByIdWithRelationsOrFail(
+      request.id,
+      ['author'],
+    );
 
     if (user.role !== Role.MODERATOR && blog.author.id !== user.id) {
       throw new ForbiddenError('You can only update your own blogs.');
     }
 
     delete request.id;
-    await this.blogRepository.update({
+    return this.blogRepository.updateEntity({
       ...blog,
       ...request,
     });
-    return this.getBlog(blog.id);
   }
 
   async deleteBlog(user: User, id: string): Promise<boolean> {
-    const blog = await this.blogRepository.findOne({
-      where: { id },
-      relations: ['author'],
-    });
+    const blog = await this.blogRepository.findOneByIdWithRelationsOrFail(id, [
+      'author',
+    ]);
 
     if (user.role !== Role.MODERATOR && blog.author.id !== user.id) {
       throw new ForbiddenError('You can only delete your own blogs.');
     }
 
-    const affectedBlog = await this.blogRepository.hardDelete({ id });
+    const affectedBlog = await this.blogRepository.hardDelete(id);
     return !!affectedBlog;
   }
 
   async getBlog(id: string): Promise<Blog> {
-    return this.blogRepository.findOneOrFail({
-      where: { id },
-      relations: ['author', 'posts'],
-    });
+    return this.blogRepository.findOneByIdWithRelationsOrFail(id, [
+      'author',
+      //'posts',
+    ]);
   }
 
   async getBlogs(request?: FilteringPaginationSorting): Promise<BlogsResponse> {
@@ -88,7 +87,7 @@ export class BlogService extends BaseService<Blog> {
       },
     };
 
-    const [results, total] = await this.blogRepository.findAndCount({
+    const [results, total] = await this.blogRepository.findMany({
       ...whereOptions,
       ...posts,
       relations: ['author'],
@@ -108,7 +107,7 @@ export class BlogService extends BaseService<Blog> {
     return this.userService.getUser(id);
   }
 
-  async findRelatedPosts(id: string): Promise<Blog[]> {
-    return this.blogRepository.find({ where: { id }, relations: ['posts'] });
-  }
+  // async findRelatedPosts(id: string): Promise<Blog[]> {
+  //   return this.blogRepository.find({ where: { id }, relations: ['posts'] });
+  // }
 }

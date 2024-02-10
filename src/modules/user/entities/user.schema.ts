@@ -2,7 +2,7 @@ import { boolean, pgEnum, pgTable, varchar } from 'drizzle-orm/pg-core';
 import { baseSchemaColumns } from '../../baseModule/baseSchema.schema';
 import { Role } from '../../../common/enums/userRole.enum';
 
-export const rolesEnum = pgEnum('role', [Role.WRITER, Role.MODERATOR]);
+export const rolesEnum = pgEnum('ROLE', [Role.WRITER, Role.MODERATOR]);
 
 export const userTable = pgTable('users', {
   ...baseSchemaColumns,

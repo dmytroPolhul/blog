@@ -8,14 +8,14 @@ import {
   Context,
 } from '@nestjs/graphql';
 import { BlogPostService } from './blog-post.service';
-import { BlogPost } from './entities/blog-post.entity';
 import { CreateBlogPostInput } from './dto/create-blog-post.input';
 import { UpdateBlogPostInput } from './dto/update-blog-post.input';
-import { Blog } from '../blog/entities/blog.entity';
 import { BlogPostsResponse } from './dto/responses/blogPost.response';
 import { BlogPostFilteringPaginationSorting } from './types/filteringPaginationSorting.input';
 import { AuthPermission } from '../../common/decorators/auth.decorator';
 import { Role } from '../../common/enums/userRole.enum';
+import { Blog } from '../blog/objectTypes/blog.objectType';
+import { BlogPost } from './objectTypes/blog-post.objectTypes';
 
 @Resolver(() => BlogPost)
 export class BlogPostResolver {

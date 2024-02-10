@@ -1,20 +1,20 @@
 import { Injectable } from '@nestjs/common';
-import { BaseService } from '../baseModule/base.service';
-import { BlogPost } from './entities/blog-post.entity';
-import { BlogPostRepository } from './repositories/blogPost.repository';
 import { CreateBlogPostInput } from './dto/create-blog-post.input';
 import { BlogService } from '../blog/blog.service';
 import { UpdateBlogPostInput } from './dto/update-blog-post.input';
-import { Blog } from '../blog/entities/blog.entity';
 import { BlogPostFilteringPaginationSorting } from './types/filteringPaginationSorting.input';
 import { BlogPostsResponse } from './dto/responses/blogPost.response';
-import { Any, ILike } from 'typeorm';
-import { User } from '../user/entities/user.entity';
 import { Role } from '../../common/enums/userRole.enum';
 import { ForbiddenError } from '@nestjs/apollo';
+import { Blog } from '../blog/objectTypes/blog.objectType';
+import { BlogPostRepository } from './repositories/blog-post.repository';
+import { BaseService } from '../baseModule/base.service';
+import { BlogPostTable } from './entities/blog-post.schema';
+import { BlogPost } from './objectTypes/blog-post.objectTypes';
+import { User } from '../user/objectTypes/user.objectType';
 
 @Injectable()
-export class BlogPostService extends BaseService<BlogPost> {
+export class BlogPostService extends BaseService<typeof BlogPostTable> {
   constructor(
     private blogService: BlogService,
     private blogPostRepository: BlogPostRepository,
@@ -23,32 +23,27 @@ export class BlogPostService extends BaseService<BlogPost> {
   }
 
   async createPost(request: CreateBlogPostInput): Promise<BlogPost> {
-    const blog = await this.blogService.getBlog(request.blogId);
-    return this.blogPostRepository.create({ ...request, blog });
+    return this.blogPostRepository.save({ ...request });
   }
 
   async updatePost(
     user: User,
     request: UpdateBlogPostInput,
   ): Promise<BlogPost> {
-    const post = await this.blogPostRepository.findOne({
-      where: { id: request.id },
-      relations: ['blog'],
-    });
+    const post = await this.blogPostRepository.findOneByIdWithRelationsOrFail(
+      request.id,
+      ['blog'],
+    );
 
     if (user.role !== Role.MODERATOR && post.blog.author.id !== user.id) {
       throw new ForbiddenError('You can only update your own blog posts.');
     }
 
-    await this.blogPostRepository.update({ ...post, ...request });
-    return this.getPost(post.id);
+    return this.blogPostRepository.updateEntity({ ...post, ...request });
   }
 
   async getPost(id: string): Promise<BlogPost> {
-    return this.blogPostRepository.findOneOrFail({
-      where: { id },
-      relations: ['blog'],
-    });
+    return this.blogPostRepository.findOneByIdWithRelationsOrFail(id, ['blog']);
   }
 
   async getPosts(
@@ -61,9 +56,10 @@ export class BlogPostService extends BaseService<BlogPost> {
           ? request?.filter?.isPublish
           : undefined,
         tags: undefined,
-        title: request?.filter?.title
-          ? ILike(`%${request?.filter?.title}%`)
-          : undefined,
+        title: request?.filter?.title,
+        // title: request?.filter?.title
+        //   ? ILike(`%${request?.filter?.title}%`)
+        //   : undefined,
       },
       skip: request?.pagination?.offset,
       take: request?.pagination?.limit,
@@ -73,10 +69,10 @@ export class BlogPostService extends BaseService<BlogPost> {
     };
 
     if (request?.filter?.tag) {
-      whereOptions.where.tags = Any([request?.filter?.tag]);
+      //whereOptions.where.tags = Any([request?.filter?.tag]);
     }
 
-    const [results, total] = await this.blogPostRepository.findAndCount({
+    const [results, total] = await this.blogPostRepository.findMany({
       ...whereOptions,
     });
 
@@ -96,7 +92,7 @@ export class BlogPostService extends BaseService<BlogPost> {
     if (user.role !== Role.MODERATOR && post.blog.author.id !== user.id) {
       throw new ForbiddenError('You can only delete your own blog posts.');
     }
-    const affectedPost = await this.blogPostRepository.hardDelete({ id });
+    const affectedPost = await this.blogPostRepository.hardDelete(id);
     return !!affectedPost;
   }
 

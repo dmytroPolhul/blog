@@ -1,7 +1,6 @@
 import { ObjectType, Field, Int } from '@nestjs/graphql';
-
-import { Blog } from '../../entities/blog.entity';
 import { BlogOptions } from '../../types/options.object';
+import { Blog } from '../../objectTypes/blog.objectType';
 
 @ObjectType()
 export class BlogsResponse {

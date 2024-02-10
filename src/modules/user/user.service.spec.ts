@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserService } from './user.service';
-import { UserRepository } from './repositories/user.repository';
 import { mockRepository } from '../../../test/mock/mock.repository';
 import { Role } from '../../common/enums/userRole.enum';
 import * as bcrypt from 'bcrypt';
 import { BadRequestException } from '@nestjs/common';
+import { UserService } from './user.service';
+import { UserRepository } from './repositories/user.repository';
 
 jest.mock('bcrypt');
 
@@ -18,6 +18,7 @@ describe('UserService', () => {
     password: '1234',
     status: true,
     role: Role.MODERATOR,
+    isActive: false,
   };
 
   const userResponse = {
@@ -46,15 +47,15 @@ describe('UserService', () => {
 
   it('should create new User', async () => {
     (bcrypt.hash as jest.Mock).mockResolvedValue('hashedPassword');
-    mockRepository.findOne.mockResolvedValueOnce(null);
-    mockRepository.create.mockResolvedValueOnce(userPayload);
+    mockRepository.findOneByEmail.mockResolvedValueOnce(null);
+    mockRepository.save.mockResolvedValueOnce(userPayload);
 
     const result = await service.createUser(userPayload);
 
-    expect(mockRepository.findOne).toHaveBeenCalledWith({
-      where: { email: userPayload.email },
-    });
-    expect(mockRepository.create).toHaveBeenCalledWith({
+    expect(mockRepository.findOneByEmail).toHaveBeenCalledWith(
+      userPayload.email,
+    );
+    expect(mockRepository.save).toHaveBeenCalledWith({
       ...userPayload,
       password: 'hashedPassword',
     });
@@ -63,8 +64,8 @@ describe('UserService', () => {
 
   it('should return bad request error', async () => {
     (bcrypt.hash as jest.Mock).mockResolvedValue('hashedPassword');
-    mockRepository.findOne.mockResolvedValueOnce(userPayload);
-    mockRepository.findOne.mockResolvedValueOnce(userPayload);
+    mockRepository.findOneByEmail.mockResolvedValueOnce(userPayload);
+    mockRepository.findOneByEmail.mockResolvedValueOnce(userPayload);
 
     await expect(service.createUser(userPayload)).rejects.toThrow(
       BadRequestException,
@@ -74,13 +75,13 @@ describe('UserService', () => {
       'User already registered',
     );
 
-    expect(mockRepository.findOne).toHaveBeenCalledWith({
-      where: { email: userPayload.email },
-    });
+    expect(mockRepository.findOneByEmail).toHaveBeenCalledWith(
+      userPayload.email,
+    );
   });
 
   it('should get user by id', async () => {
-    mockRepository.findOneOrFail.mockResolvedValueOnce(userResponse);
+    mockRepository.findOneById.mockResolvedValueOnce(userResponse);
 
     const result = await service.getUser(
       '3247aca5-4e16-4fa1-a1da-35203bb3313a',
@@ -89,7 +90,7 @@ describe('UserService', () => {
   });
 
   it('should get all users', async () => {
-    mockRepository.find.mockResolvedValueOnce([userResponse]);
+    mockRepository.findAll.mockResolvedValueOnce([userResponse]);
 
     const result = await service.getUsers();
     expect(result).toEqual([userResponse]);
@@ -100,9 +101,8 @@ describe('UserService', () => {
       ...userResponse,
       status: false,
     };
-    mockRepository.findOneOrFail.mockResolvedValueOnce(userResponse);
-    mockRepository.update.mockResolvedValueOnce(updatedUser);
-    mockRepository.delete.mockResolvedValueOnce({
+    mockRepository.findOneById.mockResolvedValueOnce(userResponse);
+    mockRepository.softDelete.mockResolvedValueOnce({
       ...updatedUser,
       deletedAt: '2023-08-12T16:04:23Z',
     });
@@ -136,12 +136,12 @@ describe('UserService', () => {
     };
     delete planedResult.password;
 
-    mockRepository.findOneOrFail.mockResolvedValueOnce({
+    mockRepository.findOneById.mockResolvedValueOnce({
       ...userResponse,
       password: 'hashedPassword',
     });
-    mockRepository.findOne.mockResolvedValueOnce(null);
-    mockRepository.update.mockResolvedValueOnce(planedResult);
+    mockRepository.findOneByEmail.mockResolvedValueOnce(null);
+    mockRepository.updateEntity.mockResolvedValueOnce(planedResult);
 
     const result = await service.updateUser(request);
     expect(result).toEqual(planedResult);
@@ -150,11 +150,11 @@ describe('UserService', () => {
   it('should return bad request when comparing old passwords is falls', async () => {
     (bcrypt.compare as jest.Mock).mockResolvedValue(false);
 
-    mockRepository.findOneOrFail.mockResolvedValueOnce({
+    mockRepository.findOneById.mockResolvedValueOnce({
       ...userResponse,
       password: 'hashedPassword',
     });
-    mockRepository.findOneOrFail.mockResolvedValueOnce({
+    mockRepository.findOneById.mockResolvedValueOnce({
       ...userResponse,
       password: 'hashedPassword',
     });
@@ -186,17 +186,17 @@ describe('UserService', () => {
       newEmail: 'test2@example.com',
     };
 
-    mockRepository.findOneOrFail.mockResolvedValueOnce({
+    mockRepository.findOneById.mockResolvedValueOnce({
       ...userResponse,
       password: 'hashedPassword',
     });
-    mockRepository.findOne.mockResolvedValueOnce(userResponse);
+    mockRepository.findOneByEmail.mockResolvedValueOnce(userResponse);
 
-    mockRepository.findOneOrFail.mockResolvedValueOnce({
+    mockRepository.findOneById.mockResolvedValueOnce({
       ...userResponse,
       password: 'hashedPassword',
     });
-    mockRepository.findOne.mockResolvedValueOnce(userResponse);
+    mockRepository.findOneByEmail.mockResolvedValueOnce(userResponse);
 
     await expect(service.updateUser(request)).rejects.toThrow(
       BadRequestException,

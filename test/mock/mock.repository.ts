@@ -8,4 +8,10 @@ export const mockRepository = {
   update: jest.fn(),
   hardDelete: jest.fn(),
   findAndCount: jest.fn(),
+  findOneByEmail: jest.fn(),
+  findOneById: jest.fn(),
+  softDelete: jest.fn(),
+  updateEntity: jest.fn(),
+  findAll: jest.fn(),
+  findOneByIdWithRelationsOrFail: jest.fn(),
 };

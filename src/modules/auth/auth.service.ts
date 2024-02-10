@@ -4,10 +4,10 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { UserService } from '../user/user.service';
 import * as bcrypt from 'bcrypt';
 import * as uuid from 'uuid';
 import * as process from 'process';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class AuthService {
@@ -17,10 +17,7 @@ export class AuthService {
   ) {}
 
   async login(email: string, password: string) {
-    const user = await this.userService.findOne({
-      where: { email, status: true },
-      select: ['password', 'email', 'status', 'role', 'id'],
-    });
+    const user = await this.userService.getAuthByEmail(email);
 
     if (!user) {
       throw new NotFoundException('User is not found');
@@ -48,7 +45,7 @@ export class AuthService {
       ...payload,
       exp: Math.floor(Date.now() / 1000) + 60 * 24 * 7,
     });
-    await this.userService.update({ ...user, token: refresh });
+    await this.userService.updateUserToken(user.id, refresh);
     const access = this.jwtService.sign(payload);
     return { access: access, session: refresh };
   }
@@ -61,10 +58,10 @@ export class AuthService {
       throw new UnauthorizedException('Invalid token');
     }
 
-    const user = await this.userService.findOne({
-      where: { id: decoded.userId, status: true, token: oldToken },
-      select: ['password', 'email', 'status', 'role', 'id'],
-    });
+    const user = await this.userService.getAuthByIdAndToken(
+      decoded.userId,
+      oldToken,
+    );
 
     if (!user) {
       throw new NotFoundException('User is not found');
@@ -83,13 +80,13 @@ export class AuthService {
       ...payload,
       exp: Math.floor(Date.now() / 1000) + 60 * 24 * 7,
     });
-    await this.userService.update({ ...user, token: refresh });
+    await this.userService.updateUserToken(user.id, refresh);
     const access = this.jwtService.sign(payload);
     return { access: access, session: refresh };
   }
 
   async validateUser(payload: any): Promise<any> {
-    return await this.userService.findOne({ where: { email: payload.sub } });
+    return await this.userService.getUserByEmail(payload.sub);
   }
 
   validatePassword(

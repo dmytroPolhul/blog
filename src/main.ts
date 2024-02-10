@@ -5,7 +5,7 @@ import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
-import fastifyCookie from 'fastify-cookie';
+import fastifyCookie, { FastifyCookieOptions } from '@fastify/cookie';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -13,7 +13,14 @@ async function bootstrap() {
     new FastifyAdapter(),
   );
 
-  app.register(fastifyCookie);
+  app.register(fastifyCookie, {
+    secret: 'token-secret',
+    parseOptions: {
+      secure: true,
+      httpOnly: true,
+      sameSite: 'none',
+    },
+  } as FastifyCookieOptions);
 
   app.useGlobalPipes(new ValidationPipe());
 

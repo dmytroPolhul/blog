@@ -1,0 +1,27 @@
+{
+  "version": "5",
+  "dialect": "pg",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1706651277427,
+      "tag": "0000_misty_preak",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1707169354644,
+      "tag": "0001_melted_alice",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1707252993068,
+      "tag": "0002_condemned_nightcrawler",
+      "breakpoints": true
+    }
+  ]
+}

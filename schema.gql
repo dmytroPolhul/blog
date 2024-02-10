@@ -4,13 +4,13 @@
 
 type Blog {
   author: User!
-  createdAt: DateTime!
-  deletedAt: DateTime!
-  description: String!
-  id: String!
-  posts: [BlogPost!]
-  title: String!
-  updatedAt: DateTime!
+  authorId: String!
+  createdAt: DateTime
+  deletedAt: DateTime
+  description: String
+  id: ID
+  title: String
+  updatedAt: DateTime
 }
 
 input BlogFilter {
@@ -33,14 +33,14 @@ type BlogOptions {
 
 type BlogPost {
   blog: Blog!
-  createdAt: DateTime!
-  deletedAt: DateTime!
-  id: String!
+  createdAt: DateTime
+  deletedAt: DateTime
+  id: ID
   isPublish: Boolean!
   mainText: String!
   tags: [String!]!
   title: String!
-  updatedAt: DateTime!
+  updatedAt: DateTime
 }
 
 input BlogPostFilter {
@@ -95,9 +95,10 @@ input CreateBlogPostInput {
 input CreateUserInput {
   email: String!
   firstName: String!
+  isActive: Boolean! = false
   lastName: String!
   password: String!
-  role: Role! = WRITER
+  role: ROLE! = WRITER
   status: Boolean! = false
 }
 
@@ -121,7 +122,7 @@ type Mutation {
   logout: Boolean!
   refresh: String!
   removeBlogPost(id: String!): Boolean!
-  removeUser(id: String!): User!
+  removeUser(id: String!): Boolean!
   updateBlog(updateBlogInput: UpdateBlogInput!): Blog!
   updateBlogPost(updateBlogPostInput: UpdateBlogPostInput!): BlogPost!
   updateUser(updateUserInput: UpdateUserInput!): User!
@@ -148,13 +149,11 @@ type Query {
   blogPosts(filter: BlogPostFilteringPaginationSorting): BlogPostsResponse!
   blogs(filter: FilteringPaginationSorting): BlogsResponse!
   getBlogById(id: String!): Blog!
-  getBlogPosts(id: String!): [Blog!]!
   userById(id: String!): User!
   users: [User!]!
 }
 
-"""Users roles"""
-enum Role {
+enum ROLE {
   MODERATOR
   WRITER
 }
@@ -187,24 +186,24 @@ input UpdateUserInput {
   email: String
   firstName: String
   id: String!
+  isActive: Boolean = false
   lastName: String
   newEmail: String
   newPassword: String
   password: String
-  role: Role = WRITER
+  role: ROLE = WRITER
   status: Boolean!
 }
 
 type User {
-  blogs: [Blog!]
-  createdAt: DateTime!
-  deletedAt: DateTime!
-  email: String!
-  firstName: String!
-  id: String!
-  lastName: String!
-  role: Role!
-  status: Boolean!
-  token: String!
-  updatedAt: DateTime!
+  createdAt: DateTime
+  deletedAt: DateTime
+  email: String
+  firstName: String
+  id: ID
+  isActive: Boolean
+  lastName: String
+  password: String
+  role: ROLE
+  updatedAt: DateTime
 }

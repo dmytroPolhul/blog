@@ -15,7 +15,7 @@ const pool = new Pool({
   database: get('POSTGRES_DB').required().asString(),
 });
 
-export const schemas = {
+const schemas = {
   userTable,
   BlogTable,
   BlogPostTable,

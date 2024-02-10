@@ -4,7 +4,6 @@ import { Pool } from 'pg';
 import {get} from "@nestled/config/lib/validate";
 import {config} from "dotenv";
 import {drizzle} from "drizzle-orm/node-postgres";
-import {schemas} from "../src/config/pg.config";
 
 config();
 const pool = new Pool({
@@ -15,6 +14,6 @@ const pool = new Pool({
     database: get('POSTGRES_DB').required().asString(),
 });
 
-const db = drizzle(pool, { schema: { ...schemas } });
+const db = drizzle(pool);
 
 migrate(db, { migrationsFolder: './drizzle', migrationsTable: 'migrations' });

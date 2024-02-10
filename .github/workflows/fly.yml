@@ -28,7 +28,7 @@ jobs:
 
       - name: Connect to database and run migrations
         run: |
-          flyctl proxy 5432:5432 -a hw-db &
+          flyctl proxy 5432:5432 -a glob-blog-app-db &
           npm run drizzle:mr
         env:
           FLY_API_TOKEN: ${{ secrets.DB_TOKEN }}

@@ -1,6 +1,7 @@
 FROM node:18-alpine AS dist
 COPY package.json package-lock.json ./
 COPY tsconfig.json ./
+COPY drizzle ./
 
 RUN apk add --no-cache python3 make g++ && \
     npm rebuild bcrypt --build-from-source && \
@@ -26,6 +27,7 @@ RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
 COPY --from=dist dist /usr/src/app/dist
+COPY --from=dist drizzle /usr/src/app/drizzle
 COPY --from=node_modules node_modules /usr/src/app/node_modules
 COPY package.json ./
 COPY tsconfig.json ./

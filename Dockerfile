@@ -5,7 +5,6 @@ COPY drizzle ./
 
 RUN apk add --no-cache python3 make g++ && \
     npm rebuild bcrypt --build-from-source && \
-    npm install pnpm && \
     apk del python3 make g++
 
 RUN npm ci
@@ -26,8 +25,6 @@ FROM node:18-alpine
 RUN mkdir -p /usr/src/app
 
 WORKDIR /usr/src/app
-
-RUN npm install pnpm
 
 COPY --from=dist dist /usr/src/app/dist
 COPY --from=dist drizzle /usr/src/app/drizzle

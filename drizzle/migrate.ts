@@ -2,8 +2,11 @@ import 'dotenv/config';
 import { migrate } from 'drizzle-orm/node-postgres/migrator';
 import { Pool } from 'pg';
 import {get} from "@nestled/config/lib/validate";
+import {config} from "dotenv";
+import {drizzle} from "drizzle-orm/node-postgres";
+import {schemas} from "../src/config/pg.config";
 
-// This will run migrations on the database, skipping the ones already applied
+config();
 const pool = new Pool({
     host: get('DB_HOST').required().asString(),
     port: get('POSTGRES_PORT').required().asPortNumber() || 5433,
@@ -12,4 +15,6 @@ const pool = new Pool({
     database: get('POSTGRES_DB').required().asString(),
 });
 
-migrate(pool, { migrationsFolder: './drizzle', migrationsTable: 'migrations' });
+const db = drizzle(pool, { schema: { ...schemas } });
+
+migrate(db, { migrationsFolder: './drizzle', migrationsTable: 'migrations' });
